@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sUNC - It's time for real standards.</title>
     <style>
-        /* CSS được giữ nguyên phần lớn */
+        /* CSS cho trang web */
         :root {
             --bg-color: #120a16;
             --primary-color: #7b43a9;
@@ -16,6 +16,11 @@
             --button-bg: #2d1c3e;
             --button-hover: #4a3461;
             --success-color: #4CAF50;
+            --danger-color: #FF6347; /* Đỏ cho lỗi */
+            --warning-color: #FFA500; /* Cam cho cảnh báo */
+            --info-color: #6A5ACD; /* Xanh tím cho thông tin */
+            --darker-bg: #0c070e; /* Màu nền footer */
+            --light-purple: #9b5dd5; /* Tím nhạt cho highlight */
         }
 
         body {
@@ -28,16 +33,18 @@
             overflow-x: hidden;
         }
 
+        /* Thanh điều hướng (Header) */
         header {
             display: flex; justify-content: space-between; align-items: center; padding: 20px 50px;
         }
 
         .logo { font-size: 24px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; }
         .nav-icons a { color: var(--text-color); margin-left: 20px; font-size: 20px; text-decoration: none; }
-        .nav-icons a::before { content: "🏠"; margin-right: 2px; }
-        .nav-icons a:nth-child(2)::before { content: "📚"; }
-        .nav-icons a:nth-child(3)::before { content: "👾"; }
+        .nav-icons a::before { content: "🏠"; margin-right: 2px; } /* Home */
+        .nav-icons a:nth-child(2)::before { content: "📚"; } /* GitHub */
+        .nav-icons a:nth-child(3)::before { content: "👾"; } /* Discord */
 
+        /* Phần Chính (Main Content) */
         main {
             display: flex; justify-content: space-between; align-items: center; padding: 50px 100px;
             min-height: 80vh; position: relative;
@@ -68,16 +75,13 @@
         .content-right { display: flex; justify-content: flex-end; }
         .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); border: 1px solid rgba(123, 67, 169, 0.3); }
 
-        /* SỬA ĐỔI QUAN TRỌNG: Định dạng cho thẻ <pre> */
         #lua-script-content {
             background-color: #2b1f3c; padding: 20px; border-radius: 8px;
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 0.9em; color: var(--text-color); overflow: auto;
-            /* Đảm bảo thẻ <pre> không thêm margin/padding ngoài ý muốn */
             margin: 0;
         }
 
-        /* Tô màu cú pháp */
         .key { color: var(--code-highlight); }
         .func { color: #81a2be; }
         .string { color: #e9c46a; }
@@ -112,6 +116,285 @@
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
+        }
+
+        /* ----- PHẦN MỚI: What makes sUNC different? ----- */
+        .features-section, .results-section {
+            padding: 80px 100px;
+            background-color: var(--bg-color);
+            text-align: center;
+            position: relative;
+        }
+
+        .features-section::before, .results-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 20% 80%, rgba(123, 67, 169, 0.08) 1px, transparent 1px),
+                              radial-gradient(circle at 80% 20%, rgba(123, 67, 169, 0.08) 1px, transparent 1px);
+            background-size: 25px 25px;
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .features-section h2, .results-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: var(--text-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* 2 cột trên màn hình lớn */
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto 80px auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: left;
+            border: 1px solid rgba(123, 67, 169, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3em;
+            color: var(--light-purple);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-card h3 .icon {
+            margin-right: 10px;
+            font-size: 1.4em;
+            color: var(--code-highlight); /* Màu icon */
+        }
+
+        .feature-card p {
+            font-size: 0.95em;
+            color: var(--secondary-text-color);
+            line-height: 1.5;
+        }
+
+        /* ----- PHẦN MỚI: A UI worth showing off... ----- */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 3 cột */
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .result-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(123, 67, 169, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-card .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .result-card .status-header .icon {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        /* Màu sắc trạng thái */
+        .result-card.status-red .status-header .icon { color: var(--danger-color); }
+        .result-card.status-red .status-header { color: var(--danger-color); }
+        .result-card.status-orange .status-header .icon { color: var(--warning-color); }
+        .result-card.status-orange .status-header { color: var(--warning-color); }
+        .result-card.status-green .status-header .icon { color: var(--success-color); }
+        .result-card.status-green .status-header { color: var(--success-color); }
+
+
+        .result-card .status-description {
+            font-size: 0.85em;
+            color: var(--secondary-text-color);
+            margin-bottom: 20px;
+            line-height: 1.4;
+            min-height: 60px; /* Đảm bảo chiều cao thống nhất */
+        }
+
+        /* Vòng tròn phần trăm */
+        .progress-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            font-weight: bold;
+            color: var(--text-color);
+            background: conic-gradient(var(--primary-color) 0%, var(--card-bg) 0%); /* Mặc định */
+        }
+
+        /* Tô màu vòng tròn dựa trên phần trăm */
+        .progress-circle.p90 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 90%, var(--card-bg) 90%, var(--card-bg) 100%); }
+        .progress-circle.p92 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 92%, var(--card-bg) 92%, var(--card-bg) 100%); }
+        .progress-circle.p87 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 87%, var(--card-bg) 87%, var(--card-bg) 100%); }
+        
+        .progress-circle .inner-circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--card-bg); /* Màu nền bên trong vòng tròn */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle .inner-circle span {
+            z-index: 2;
+        }
+
+        .result-stats {
+            font-size: 0.9em;
+            color: var(--secondary-text-color);
+            margin-top: 15px;
+        }
+        .result-stats span {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        .result-stats .failed {
+            color: var(--danger-color);
+        }
+
+        .result-footer-text {
+            font-size: 0.8em;
+            color: var(--secondary-text-color);
+            margin-top: 20px;
+            text-align: center;
+        }
+        .result-footer-text span {
+            color: var(--light-purple);
+        }
+
+        .more-results-btn {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 40px;
+        }
+        .more-results-btn:hover {
+            background-color: var(--button-hover);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--darker-bg);
+            padding: 30px 100px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--secondary-text-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+        footer span {
+            color: var(--light-purple);
+            font-weight: 600;
+        }
+
+        .footer-links button {
+            background: none;
+            border: none;
+            color: var(--secondary-text-color);
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-left: 20px;
+            transition: color 0.2s;
+        }
+        .footer-links button:hover {
+            color: var(--light-purple);
+        }
+        /* Icon mô phỏng cho footer links */
+        .footer-links button:nth-child(1)::before { content: "🚫 "; } /* Bị cấm */
+        .footer-links button:nth-child(2)::before { content: "📈 "; } /* Biểu đồ */
+        .footer-links button:nth-child(3)::before { content: "📊 "; } /* Biểu đồ */
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            header, main, .features-section, .results-section, footer {
+                padding: 20px 30px;
+            }
+            .content-left, .content-right {
+                flex: none;
+                width: 100%;
+                text-align: center;
+            }
+            main {
+                flex-direction: column;
+            }
+            .content-right {
+                margin-top: 40px;
+                justify-content: center;
+            }
+            .code-container {
+                width: 100%;
+            }
+            .features-grid, .results-grid {
+                grid-template-columns: 1fr;
+            }
+            .result-card .status-description {
+                min-height: auto;
+            }
+            footer {
+                flex-direction: column;
+            }
+            .footer-links {
+                margin-top: 20px;
+            }
+        }
+        @media (max-width: 768px) {
+            .content-left h1 {
+                font-size: 2.5em;
+            }
+            .features-section h2, .results-section h2 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
@@ -172,23 +455,129 @@
         </div>
     </main>
 
-    
+    <section class="features-section">
+        <div class="background-overlay"></div>
+        <h2>What makes sUNC different?</h2>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3><span class="icon">🔒</span> Real Function Database</h3>
+                <p>sUNC doesn't just look for presence of functions, it ensures proper and expected functionality.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">🧪</span> Controlled Test Environment</h3>
+                <p>All tests are run in the official sUNC game, designed for accurate, secure, and isolated environment.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">✍️</span> Cryptographic Verification</h3>
+                <p>Tests are cryptographically signed at the protocol level, allowing anyone to verify they're real.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">📊</span> Transparent Results</h3>
+                <p>Counts, logs, and screenshots are publicly available for every test, providing complete transparency.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">💬</span> Developer Consultation</h3>
+                <p>Before adding new tests, sUNC's team consults with top developers to ensure accurate implementation.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">🧠</span> Designed for Humans</h3>
+                <p>sUNC's interface and program flow is designed to be easy for ANY user, no matter their technical skill.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">🛡️</span> Mature & Battle-Tested</h3>
+                <p>The sUNC project, before sUNC existed, has been a trusted & successful executor, ever since its inception.</p>
+            </div>
+            <div class="feature-card">
+                <h3><span class="icon">📜</span> Accurate Documentation</h3>
+                <p>Fully documented and understandable, even to new users, including explanations of terms, functionality, and safety advice.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="results-section">
+        <div class="background-overlay"></div>
+        <h2>A UI worth showing off...</h2>
+
+        <div class="results-grid">
+            <div class="result-card status-red">
+                <div class="status-header"><span class="icon">⚠️</span> Denied Result</div>
+                <p class="status-description">This result is from a user-modified client. This result is denied by sUNC's cryptographic verification system.</p>
+                
+                <div class="progress-circle p90">
+                    <div class="inner-circle">
+                        <span>90%</span>
+                    </div>
+                </div>
+                <div class="result-stats">
+                    <span>81/90</span> <span class="failed">8 Failed</span><br>
+                    <span>00:00:00</span> Duration<br>
+                    <span>0.0</span> sUNC Score<br>
+                    Executor Name
+                </div>
+                <p class="result-footer-text"><span style="color:var(--danger-color);">Modified</span> Result</p>
+            </div>
+
+            <div class="result-card status-orange">
+                <div class="status-header"><span class="icon">🚫</span> Unverified Result</div>
+                <p class="status-description">No cryptographic proof. Cannot verify if this client is real. sUNC does not give score or detailed verification.</p>
+                
+                <div class="progress-circle p92">
+                    <div class="inner-circle">
+                        <span>92%</span>
+                    </div>
+                </div>
+                <div class="result-stats">
+                    <span>83/90</span> <span class="failed">7 Failed</span><br>
+                    <span>00:00:00</span> Duration<br>
+                    <span>0.0</span> sUNC Score<br>
+                    Executor Name
+                </div>
+                <p class="result-footer-text">Results from <span style="color:var(--warning-color);">Unverified</span> client.</p>
+            </div>
+
+            <div class="result-card status-green">
+                <div class="status-header"><span class="icon">✅</span> Verified & Secure</div>
+                <p class="status-description">This client is verified by sUNC's cryptographic system. Showing verification, score, and all data.</p>
+                
+                <div class="progress-circle p87">
+                    <div class="inner-circle">
+                        <span>87%</span>
+                    </div>
+                </div>
+                <div class="result-stats">
+                    <span>79/90</span> <span class="failed">11 Failed</span><br>
+                    <span>00:00:00</span> Duration<br>
+                    <span>0.0</span> sUNC Score<br>
+                    Executor Name
+                </div>
+                <p class="result-footer-text">Verified results from <span style="color:var(--success-color);">official</span> client.</p>
+            </div>
+        </div>
+        <button class="more-results-btn">See More Results</button>
+    </section>
+
+    <footer>
+        <p>sUNC was a good idea, <span>sUNC made it better</span></p>
+        <div class="footer-links">
+            <button>🚫 Denied Validation</button>
+            <button>📈 Discuss as a Quality Metric</button>
+            <button>📊 Docs & Simulator</button>
+        </div>
+    </footer>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const copyButton = document.getElementById('copy-button');
-            const scriptContentPre = document.getElementById('lua-script-content'); // Đổi từ Div sang Pre
+            const scriptContentPre = document.getElementById('lua-script-content');
 
             copyButton.addEventListener('click', async () => {
-                // Lấy nội dung script. textContent của thẻ <pre> sẽ giữ nguyên định dạng, bao gồm cả xuống dòng và khoảng trắng.
                 let scriptText = scriptContentPre.textContent;
-                
-                // Thay thế &quot; thành " (đảm bảo mã sao chép là sạch)
-                scriptText = scriptText.replace(/&quot;/g, '"').trim(); 
+                scriptText = scriptText.replace(/&quot;/g, '"').trim();
 
                 try {
                     await navigator.clipboard.writeText(scriptText);
 
-                    // Phản hồi người dùng
                     copyButton.textContent = 'Copied!';
                     copyButton.classList.add('copied');
 
