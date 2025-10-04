@@ -1,355 +1,162 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sUNC - It's time for real standards.</title>
-    <style>
-        /* CSS cho trang web */
-        :root {
-            --bg-color: #120a16;
-            --primary-color: #7b43a9;
-            --text-color: #f0f0f0;
-            --secondary-text-color: #a0a0a0;
-            --card-bg: #1c1326;
-            --code-highlight: #ff55ff;
-            --button-bg: #2d1c3e;
-            --button-hover: #4a3461;
-            --success-color: #4CAF50;
-            --danger-color: #FF6347;
-            --warning-color: #FFA500;
-            --info-color: #6A5ACD;
-            --darker-bg: #0c070e;
-            --light-purple: #9b5dd5;
-            /* Màu icon trong header */
-            --icon-color-home: #FF6347;     /* Đỏ */
-            --icon-color-github: #FFA500;   /* Cam */
-            --icon-color-discord: #4CAF50;  /* Xanh lá */
-            --icon-color-custom: #FF55FF;   /* Tím hồng */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sUNC - It's time for real standards.</title>
+  <style>
+    :root {
+      --bg-color: #120a16;
+      --primary-color: #7b43a9;
+      --text-color: #f0f0f0;
+      --secondary-text-color: #a0a0a0;
+      --card-bg: #1c1326;
+      --code-highlight: #ff55ff;
+      --button-bg: #2d1c3e;
+      --button-hover: #4a3461;
+      --success-color: #4CAF50;
+      --danger-color: #FF6347;
+      --warning-color: #FFA500;
+      --info-color: #6A5ACD;
+      --darker-bg: #0c070e;
+      --light-purple: #9b5dd5;
+      --icon-color-home: #FF6347;
+      --icon-color-github: #FFA500;
+      --icon-color-discord: #4CAF50;
+      --icon-color-custom: #FF55FF;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 0;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
 
-        /* Thanh điều hướng (Header) */
-        header {
-            display: flex; justify-content: space-between; align-items: center; padding: 20px 50px;
-        }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 50px;
+    }
 
-        .logo { font-size: 24px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; }
+    .logo { font-size: 24px; font-weight: bold; }
 
-        /* SỬA ĐỔI ICON HEADER */
-        .nav-icons a {
-            font-size: 0; /* Ẩn nội dung nếu là emoji */
-            width: 30px;
-            height: 30px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 10px;
-            text-decoration: none;
-            position: relative;
-        }
+    .nav-icons a {
+      width: 30px; height: 30px;
+      display: inline-flex; justify-content: center; align-items: center;
+      margin-left: 10px; text-decoration: none;
+      font-size: 20px;
+    }
+    .nav-icons a.home { color: var(--icon-color-home); }
+    .nav-icons a.github { color: var(--icon-color-github); }
+    .nav-icons a.discord { color: var(--icon-color-discord); }
+    .nav-icons a.custom { color: var(--icon-color-custom); }
 
-        /* Tạo hình dạng icon thay cho emoji */
-        .nav-icons a::after {
-            font-size: 16px;
-            line-height: 1;
-            font-family: Arial, sans-serif; /* Dùng font cơ bản cho ký tự */
-            color: var(--text-color);
-        }
+    main {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 50px 100px; min-height: 80vh; position: relative;
+    }
 
-        /* Home Icon (Mô phỏng bằng A hoặc ký tự nhà đơn giản) */
-        .nav-icons a:nth-child(1)::after {
-            content: "A"; /* Dùng chữ cái đơn giản làm icon placeholder */
-            color: var(--icon-color-home);
-        }
-        /* GitHub Icon */
-        .nav-icons a:nth-child(2)::after {
-            content: "B"; /* Dùng chữ cái đơn giản làm icon placeholder */
-            color: var(--icon-color-github);
-        }
-        /* Discord Icon */
-        .nav-icons a:nth-child(3)::after {
-            content: "C"; /* Dùng chữ cái đơn giản làm icon placeholder */
-            color: var(--icon-color-discord);
-        }
-        /* Custom Icon */
-        .nav-icons a:nth-child(4)::after {
-            content: "D"; /* Dùng chữ cái đơn giản làm icon placeholder */
-            color: var(--icon-color-custom);
-        }
+    .background-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background-image: radial-gradient(circle at 10% 10%, rgba(123, 67, 169, 0.1) 1px, transparent 1px),
+                        radial-gradient(circle at 90% 90%, rgba(123, 67, 169, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.5; z-index: 0;
+    }
 
+    .content-left, .content-right { flex: 1; padding: 20px; z-index: 1; }
+    .content-left h1 { font-size: 3em; margin-bottom: 20px; }
+    .content-left p { font-size: 1.1em; color: var(--secondary-text-color); margin-bottom: 40px; }
 
-        /* PHẦN CÒN LẠI GIỮ NGUYÊN (Hoặc được tinh chỉnh nhẹ) */
-        main {
-            display: flex; justify-content: space-between; align-items: center; padding: 50px 100px;
-            min-height: 80vh; position: relative;
-        }
+    .buttons-group { display: flex; gap: 15px; }
+    .btn {
+      padding: 12px 25px; border-radius: 6px; font-weight: 600;
+      cursor: pointer; text-decoration: none; display: flex; align-items: center;
+    }
+    .btn-doc { background-color: var(--button-bg); color: var(--text-color); border: 1px solid var(--secondary-text-color); }
+    .btn-doc:hover { background-color: var(--button-hover); }
+    .btn-discord { background-color: var(--primary-color); color: var(--text-color); }
+    .btn-discord:hover { background-color: #9a5ac7; }
+    .btn-icon { margin-right: 8px; }
 
-        .background-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(circle at 10% 10%, rgba(123, 67, 169, 0.1) 1px, transparent 1px),
-                              radial-gradient(circle at 90% 90%, rgba(123, 67, 169, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px; opacity: 0.5; z-index: 0;
-        }
+    .btn-doc .btn-icon::before { content: "📄"; }
+    .btn-discord .btn-icon::before { content: "✉️"; }
 
-        .content-left, .content-right { flex: 1; padding: 20px; z-index: 1; }
-        .content-left { max-width: 500px; }
-        .content-left h1 { font-size: 3em; margin-bottom: 20px; color: var(--text-color); }
-        .content-left p { font-size: 1.1em; color: var(--secondary-text-color); margin-bottom: 40px; }
+    .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; }
 
-        .buttons-group { display: flex; gap: 15px; }
+    #lua-script-content {
+      background-color: #2b1f3c; padding: 20px; border-radius: 8px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9em; color: var(--text-color);
+      overflow: auto; margin: 0;
+    }
 
-        /* SỬA ĐỔI ICON NÚT */
-        .btn { padding: 12px 25px; border: none; border-radius: 6px; font-size: 1em; font-weight: 600; cursor: pointer; text-decoration: none; transition: background-color 0.3s; display: flex; align-items: center; }
-        .btn-doc { background-color: var(--button-bg); color: var(--text-color); border: 1px solid var(--secondary-text-color); }
-        .btn-doc:hover { background-color: var(--button-hover); }
-        .btn-discord { background-color: var(--primary-color); color: var(--text-color); }
-        .btn-discord:hover { background-color: #9a5ac7; }
-        .btn-icon { margin-right: 8px; font-size: 1.2em; }
-        /* Dùng ký tự HTML Entity thay cho emoji */
-        .btn-doc .btn-icon::before { content: "&#128196;"; /* Mô phỏng tài liệu/sách */ }
-        .btn-discord .btn-icon::before { content: " &#9993;"; /* Mô phỏng tin nhắn */ }
-
-
-        .content-right { display: flex; justify-content: flex-end; }
-        .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); border: 1px solid rgba(123, 67, 169, 0.3); }
-
-        #lua-script-content {
-            background-color: #2b1f3c; padding: 20px; border-radius: 8px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.9em; color: var(--text-color); overflow: auto;
-            margin: 0;
-        }
-
-        .key { color: var(--code-highlight); }
-        .func { color: #81a2be; }
-        .string { color: #e9c46a; }
-        .bool { color: #f7a072; }
-        .num { color: #9fcc73; }
-
-        .code-info {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-top: 15px; padding: 10px; background-color: #170d20;
-            border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .copy-btn {
-            background-color: var(--button-bg); color: var(--text-color);
-            padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
-            display: flex; align-items: center; transition: background-color 0.3s;
-        }
-        .copy-btn:hover { background-color: var(--button-hover); }
-        /* SỬA ĐỔI ICON NÚT COPY */
-        .copy-btn::before { content: "&#x2398;"; /* Mô phỏng biểu tượng cắt/copy */ margin-right: 5px; font-size: 1.2em; }
-
-        .copy-btn.copied { background-color: var(--success-color); color: #fff; }
-        .copy-btn.copied::before { content: "✅"; }
-
-        .code-disclaimer { font-size: 0.8em; color: var(--secondary-text-color); max-width: 300px; }
-
-        .scroll-indicator {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            font-size: 30px; color: var(--secondary-text-color); animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        /* Thêm CSS cho phần dưới main để đảm bảo đầy đủ */
-        .features-section, .results-section { padding: 80px 100px; background-color: var(--bg-color); text-align: center; position: relative; }
-        .features-section h2, .results-section h2 { font-size: 2.5em; margin-bottom: 60px; color: var(--text-color); position: relative; z-index: 1; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto 80px auto; position: relative; z-index: 1; }
-        .feature-card { background-color: var(--card-bg); padding: 30px; border-radius: 12px; text-align: left; border: 1px solid rgba(123, 67, 169, 0.3); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); transition: transform 0.2s ease-in-out; }
-        .feature-card h3 { font-size: 1.3em; color: var(--light-purple); margin-bottom: 10px; display: flex; align-items: center; }
-        .feature-card h3 .icon { margin-right: 10px; font-size: 1.4em; color: var(--code-highlight); }
-        .feature-card p { font-size: 0.95em; color: var(--secondary-text-color); line-height: 1.5; }
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-        .result-card { background-color: var(--card-bg); padding: 30px; border-radius: 12px; text-align: center; border: 1px solid rgba(123, 67, 169, 0.3); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); }
-        .progress-circle { position: relative; width: 120px; height: 120px; border-radius: 50%; margin: 20px auto; display: flex; align-items: center; justify-content: center; font-size: 2.2em; font-weight: bold; color: var(--text-color); background: conic-gradient(var(--primary-color) 0%, var(--card-bg) 0%); }
-        .progress-circle.p90 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 90%, var(--card-bg) 90%, var(--card-bg) 100%); }
-        .progress-circle.p92 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 92%, var(--card-bg) 92%, var(--card-bg) 100%); }
-        .progress-circle.p87 { background: conic-gradient(var(--primary-color) 0%, var(--primary-color) 87%, var(--card-bg) 87%, var(--card-bg) 100%); }
-        .progress-circle .inner-circle { position: absolute; width: 100px; height: 100px; border-radius: 50%; background-color: var(--card-bg); display: flex; align-items: center; justify-content: center; }
-        .progress-circle .inner-circle span { z-index: 2; }
-
-        footer { background-color: var(--darker-bg); padding: 30px 100px; text-align: center; font-size: 0.9em; color: var(--secondary-text-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        footer p { margin: 5px 0; }
-        footer span { color: var(--light-purple); font-weight: 600; }
-        .footer-links button { background: none; border: none; color: var(--secondary-text-color); font-size: 0.9em; cursor: pointer; margin-left: 20px; transition: color 0.2s; }
-        .footer-links button:hover { color: var(--light-purple); }
-        .footer-links button:nth-child(1)::before { content: "🚫 "; }
-        .footer-links button:nth-child(2)::before { content: "📈 "; }
-        .footer-links button:nth-child(3)::before { content: "📊 "; }
-    </style>
+    .copy-btn {
+      background-color: var(--button-bg); color: var(--text-color);
+      padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
+    }
+    .copy-btn::before { content: "⎘"; margin-right: 5px; }
+    .copy-btn.copied { background-color: var(--success-color); }
+    .copy-btn.copied::before { content: "✅"; }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">sUNC</div>
-        <div class="nav-icons">
-            <a href="#" aria-label="Home"></a>
-            <a href="#" aria-label="GitHub"></a>
-            <a href="#" aria-label="Discord"></a>
-            <a href="#" aria-label="Custom Icon"></a>
-        </div>
-    </header>
+  <header>
+    <div class="logo">sUNC</div>
+    <div class="nav-icons">
+      <a href="#" class="home">🏠</a>
+      <a href="#" class="github">🐱</a>
+      <a href="#" class="discord">💬</a>
+      <a href="#" class="custom">⭐</a>
+    </div>
+  </header>
 
-    <main>
-        <div class="background-overlay"></div>
+  <main>
+    <div class="background-overlay"></div>
 
-        <div class="content-left">
-            <h1>It's time for real standards.</h1>
-            <p>sUNC is designed to elevate the standard of executor testing by ensuring functions operate as intended, exposing fake implementations, and providing full transparency in real-world executor performance.</p>
+    <div class="content-left">
+      <h1>It's time for real standards.</h1>
+      <p>sUNC is designed to elevate the standard...</p>
+      <div class="buttons-group">
+        <a href="#" class="btn btn-doc"><span class="btn-icon"></span>Documentation</a>
+        <a href="#" class="btn btn-discord"><span class="btn-icon"></span>Join Discord</a>
+      </div>
+    </div>
 
-            <div class="buttons-group">
-                <a href="#" class="btn btn-doc">
-                    <span class="btn-icon"></span>
-                    Documentation
-                </a>
-                <a href="#" class="btn btn-discord">
-                    <span class="btn-icon"></span>
-                    Join Discord
-                </a>
-            </div>
-        </div>
-
-        <div class="content-right">
-            <div class="code-container">
-                <pre id="lua-script-content">
-<span class="func">getgenv</span>().sUNCDebug = {
-    [&quot;<span class="string">printcheckpoints</span>&quot;] = <span class="bool">false</span>,
-    [&quot;<span class="string">delaybetweentests</span>&quot;] = <span class="num">0</span>,
-    [&quot;<span class="string">printtesttimetaken</span>&quot;] = <span class="bool">false</span>,
+    <div class="content-right">
+      <div class="code-container">
+        <pre id="lua-script-content">
+getgenv().sUNCDebug = {
+    ["printcheckpoints"] = false,
+    ["delaybetweentests"] = 0,
+    ["printtesttimetaken"] = false,
 }
 
-<span class="func">loadstring</span>(<span class="func">game</span>:<span class="func">HttpGet</span>(&quot;<span class="string">https://script.sunc.su/</span>&quot;))()</pre>
+loadstring(game:HttpGet("https://script.sunc.su/"))()
+        </pre>
+        <button id="copy-button" class="copy-btn">Copy Script</button>
+      </div>
+    </div>
+  </main>
 
-                <div class="code-info">
-                    <button id="copy-button" class="copy-btn">
-                        Copy Script
-                    </button>
-                    <p class="code-disclaimer">
-                        Script only works in the official sUNC testing game (as of v2) for accurate and secure test results. Join our Discord for the latest game link.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="scroll-indicator">
-            <span style="font-size: 0.5em;">▼</span>
-        </div>
-    </main>
-
-    <section class="features-section">
-        <div class="background-overlay"></div>
-        <h2>What makes sUNC different?</h2>
-
-        <div class="features-grid">
-            <div class="feature-card"><h3><span class="icon">🔒</span> Real Function Database</h3><p>sUNC doesn't just look for presence of functions, it ensures proper and expected functionality.</p></div>
-            <div class="feature-card"><h3><span class="icon">🧪</span> Controlled Test Environment</h3><p>All tests are run in the official sUNC game, designed for accurate, secure, and isolated environment.</p></div>
-            <div class="feature-card"><h3><span class="icon">✍️</span> Cryptographic Verification</h3><p>Tests are cryptographically signed at the protocol level, allowing anyone to verify they're real.</p></div>
-            <div class="feature-card"><h3><span class="icon">📊</span> Transparent Results</h3><p>Counts, logs, and screenshots are publicly available for every test, providing complete transparency.</p></div>
-            <div class="feature-card"><h3><span class="icon">💬</span> Developer Consultation</h3><p>Before adding new tests, sUNC's team consults with top developers to ensure accurate implementation.</p></div>
-            <div class="feature-card"><h3><span class="icon">🧠</span> Designed for Humans</h3><p>sUNC's interface and program flow is designed to be easy for ANY user, no matter their technical skill.</p></div>
-            <div class="feature-card"><h3><span class="icon">🛡️</span> Mature & Battle-Tested</h3><p>The sUNC project, before sUNC existed, has been a trusted & successful executor, ever since its inception.</p></div>
-            <div class="feature-card"><h3><span class="icon">📜</span> Accurate Documentation</h3><p>Fully documented and understandable, even to new users, including explanations of terms, functionality, and safety advice.</p></div>
-        </div>
-    </section>
-
-    <section class="results-section">
-        <div class="background-overlay"></div>
-        <h2>A UI worth showing off...</h2>
-
-        <div class="results-grid">
-            <div class="result-card status-red">
-                <div class="status-header"><span class="icon">⚠️</span> Denied Result</div>
-                <p class="status-description">This result is from a user-modified client. This result is denied by sUNC's cryptographic verification system.</p>
-                <div class="progress-circle p90"><div class="inner-circle"><span>90%</span></div></div>
-                <div class="result-stats">
-                    <span>81/90</span> <span class="failed">8 Failed</span><br>
-                    <span>00:00:00</span> Duration<br>
-                    <span>0.0</span> sUNC Score<br>
-                    Executor Name
-                </div>
-                <p class="result-footer-text"><span style="color:var(--danger-color);">Modified</span> Result</p>
-            </div>
-
-            <div class="result-card status-orange">
-                <div class="status-header"><span class="icon">🚫</span> Unverified Result</div>
-                <p class="status-description">No cryptographic proof. Cannot verify if this client is real. sUNC does not give score or detailed verification.</p>
-                <div class="progress-circle p92"><div class="inner-circle"><span>92%</span></div></div>
-                <div class="result-stats">
-                    <span>83/90</span> <span class="failed">7 Failed</span><br>
-                    <span>00:00:00</span> Duration<br>
-                    <span>0.0</span> sUNC Score<br>
-                    Executor Name
-                </div>
-                <p class="result-footer-text">Results from <span style="color:var(--warning-color);">Unverified</span> client.</p>
-            </div>
-
-            <div class="result-card status-green">
-                <div class="status-header"><span class="icon">✅</span> Verified & Secure</div>
-                <p class="status-description">This client is verified by sUNC's cryptographic system. Showing verification, score, and all data.</p>
-                <div class="progress-circle p87"><div class="inner-circle"><span>87%</span></div></div>
-                <div class="result-stats">
-                    <span>79/90</span> <span class="failed">11 Failed</span><br>
-                    <span>00:00:00</span> Duration<br>
-                    <span>0.0</span> sUNC Score<br>
-                    Executor Name
-                </div>
-                <p class="result-footer-text">Verified results from <span style="color:var(--success-color);">official</span> client.</p>
-            </div>
-        </div>
-        <button class="more-results-btn">See More Results</button>
-    </section>
-
-    <footer>
-        <p>sUNC was a good idea, <span>sUNC made it better</span></p>
-        <div class="footer-links">
-            <button>🚫 Denied Validation</button>
-            <button>📈 Discuss as a Quality Metric</button>
-            <button>📊 Docs & Simulator</button>
-        </div>
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const copyButton = document.getElementById('copy-button');
-            const scriptContentPre = document.getElementById('lua-script-content');
-
-            copyButton.addEventListener('click', async () => {
-                let scriptText = scriptContentPre.textContent;
-                scriptText = scriptText.replace(/&quot;/g, '"').trim();
-
-                try {
-                    await navigator.clipboard.writeText(scriptText);
-
-                    copyButton.textContent = 'Copied!';
-                    copyButton.classList.add('copied');
-
-                    setTimeout(() => {
-                        copyButton.textContent = 'Copy Script';
-                        copyButton.classList.remove('copied');
-                    }, 2000);
-
-                } catch (err) {
-                    console.error('Không thể sao chép văn bản:', err);
-                    alert('Lỗi sao chép. Vui lòng sao chép thủ công.');
-                }
-            });
-        });
-    </script>
+  <script>
+    document.getElementById("copy-button").addEventListener("click", async () => {
+      const scriptText = document.getElementById("lua-script-content").innerText.trim();
+      try {
+        await navigator.clipboard.writeText(scriptText);
+        const btn = document.getElementById("copy-button");
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Copy Script";
+          btn.classList.remove("copied");
+        }, 2000);
+      } catch (err) {
+        alert("Không thể copy. Vui lòng copy thủ công.");
+      }
+    });
+  </script>
 </body>
 </html>
