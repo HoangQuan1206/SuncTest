@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>SUNC Script Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Icon set -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-900 text-white flex flex-col min-h-screen">
@@ -24,8 +23,9 @@
     </nav>
   </header>
 
-  <!-- Main content -->
-  <main class="flex-grow p-6">
+  <!-- Main -->
+  <main class="flex-grow p-6 space-y-6">
+    <!-- Code Viewer -->
     <div class="code-container bg-gray-800 rounded-xl p-4 shadow-lg relative">
       <pre><code id="lua-script-content" class="language-lua">
 getgenv().sUNCDebug = {
@@ -40,6 +40,12 @@ loadstring(game:HttpGet("https://script.sunc.su/"))()
         <i data-lucide="copy" class="w-4 h-4"></i> Copy Script
       </button>
     </div>
+
+    <!-- Console log -->
+    <div class="bg-black p-4 rounded-xl shadow-inner">
+      <h2 class="font-bold mb-2 flex items-center gap-2"><i data-lucide="terminal" class="w-5 h-5"></i> Console</h2>
+      <div id="console-log" class="h-32 overflow-y-auto text-sm font-mono text-green-400"></div>
+    </div>
   </main>
 
   <!-- Footer -->
@@ -49,11 +55,12 @@ loadstring(game:HttpGet("https://script.sunc.su/"))()
 
   <!-- Script -->
   <script>
-    // copy script
+    // Copy Script
     document.getElementById("copy-button").addEventListener("click", async () => {
       const scriptText = document.getElementById("lua-script-content").innerText.trim();
       try {
         await navigator.clipboard.writeText(scriptText);
+        logToConsole("Đã copy script vào clipboard!");
         const btn = document.getElementById("copy-button");
         btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copied!';
         lucide.createIcons();
@@ -62,12 +69,22 @@ loadstring(game:HttpGet("https://script.sunc.su/"))()
           lucide.createIcons();
         }, 2000);
       } catch (err) {
-        alert("Không thể copy. Vui lòng copy thủ công.");
+        logToConsole("❌ Không thể copy script!");
       }
     });
 
-    // load icons
+    // Console log
+    function logToConsole(msg) {
+      const logDiv = document.getElementById("console-log");
+      const line = document.createElement("div");
+      line.textContent = "> " + msg;
+      logDiv.appendChild(line);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    // Init icons
     lucide.createIcons();
+    logToConsole("Trang đã khởi động thành công ✅");
   </script>
 </body>
 </html>
