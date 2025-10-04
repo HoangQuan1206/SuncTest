@@ -2,132 +2,32 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>sUNC - It's time for real standards.</title>
-  <style>
-    :root {
-      --bg-color: #120a16;
-      --primary-color: #7b43a9;
-      --text-color: #f0f0f0;
-      --secondary-text-color: #a0a0a0;
-      --card-bg: #1c1326;
-      --code-highlight: #ff55ff;
-      --button-bg: #2d1c3e;
-      --button-hover: #4a3461;
-      --success-color: #4CAF50;
-      --danger-color: #FF6347;
-      --warning-color: #FFA500;
-      --info-color: #6A5ACD;
-      --darker-bg: #0c070e;
-      --light-purple: #9b5dd5;
-      --icon-color-home: #FF6347;
-      --icon-color-github: #FFA500;
-      --icon-color-discord: #4CAF50;
-      --icon-color-custom: #FF55FF;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      margin: 0; padding: 0;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      line-height: 1.6;
-    }
-
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 50px;
-    }
-
-    .logo { font-size: 24px; font-weight: bold; }
-
-    .nav-icons a {
-      width: 30px; height: 30px;
-      display: inline-flex; justify-content: center; align-items: center;
-      margin-left: 10px; text-decoration: none;
-      font-size: 20px;
-    }
-    .nav-icons a.home { color: var(--icon-color-home); }
-    .nav-icons a.github { color: var(--icon-color-github); }
-    .nav-icons a.discord { color: var(--icon-color-discord); }
-    .nav-icons a.custom { color: var(--icon-color-custom); }
-
-    main {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 50px 100px; min-height: 80vh; position: relative;
-    }
-
-    .background-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: radial-gradient(circle at 10% 10%, rgba(123, 67, 169, 0.1) 1px, transparent 1px),
-                        radial-gradient(circle at 90% 90%, rgba(123, 67, 169, 0.1) 1px, transparent 1px);
-      background-size: 20px 20px;
-      opacity: 0.5; z-index: 0;
-    }
-
-    .content-left, .content-right { flex: 1; padding: 20px; z-index: 1; }
-    .content-left h1 { font-size: 3em; margin-bottom: 20px; }
-    .content-left p { font-size: 1.1em; color: var(--secondary-text-color); margin-bottom: 40px; }
-
-    .buttons-group { display: flex; gap: 15px; }
-    .btn {
-      padding: 12px 25px; border-radius: 6px; font-weight: 600;
-      cursor: pointer; text-decoration: none; display: flex; align-items: center;
-    }
-    .btn-doc { background-color: var(--button-bg); color: var(--text-color); border: 1px solid var(--secondary-text-color); }
-    .btn-doc:hover { background-color: var(--button-hover); }
-    .btn-discord { background-color: var(--primary-color); color: var(--text-color); }
-    .btn-discord:hover { background-color: #9a5ac7; }
-    .btn-icon { margin-right: 8px; }
-
-    .btn-doc .btn-icon::before { content: "📄"; }
-    .btn-discord .btn-icon::before { content: "✉️"; }
-
-    .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; }
-
-    #lua-script-content {
-      background-color: #2b1f3c; padding: 20px; border-radius: 8px;
-      font-family: 'Consolas', monospace;
-      font-size: 0.9em; color: var(--text-color);
-      overflow: auto; margin: 0;
-    }
-
-    .copy-btn {
-      background-color: var(--button-bg); color: var(--text-color);
-      padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
-    }
-    .copy-btn::before { content: "⎘"; margin-right: 5px; }
-    .copy-btn.copied { background-color: var(--success-color); }
-    .copy-btn.copied::before { content: "✅"; }
-  </style>
+  <title>SUNC Script Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Icon set -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-gray-900 text-white flex flex-col min-h-screen">
 
-  <header>
-    <div class="logo">sUNC</div>
-    <div class="nav-icons">
-      <a href="#" class="home">🏠</a>
-      <a href="#" class="github">🐱</a>
-      <a href="#" class="discord">💬</a>
-      <a href="#" class="custom">⭐</a>
-    </div>
+  <!-- Header -->
+  <header class="p-4 flex justify-between items-center bg-gray-800 shadow-md">
+    <h1 class="text-xl font-bold flex items-center gap-2">
+      <i data-lucide="code-2" class="w-6 h-6 text-blue-400"></i> SUNC Script Hub
+    </h1>
+    <nav class="flex gap-4">
+      <a href="https://docs.sunc.su/" target="_blank" class="flex items-center gap-1 hover:text-blue-400">
+        <i data-lucide="book-open" class="w-5 h-5"></i> Documentation
+      </a>
+      <a href="https://www.youtube.com/watch?v=knW7-x7Y7RE" target="_blank" class="flex items-center gap-1 hover:text-green-400">
+        <i data-lucide="music" class="w-5 h-5"></i> Discord
+      </a>
+    </nav>
   </header>
 
-  <main>
-    <div class="background-overlay"></div>
-
-    <div class="content-left">
-      <h1>It's time for real standards.</h1>
-      <p>sUNC is designed to elevate the standard...</p>
-      <div class="buttons-group">
-        <a href="#" class="btn btn-doc"><span class="btn-icon"></span>Documentation</a>
-        <a href="#" class="btn btn-discord"><span class="btn-icon"></span>Join Discord</a>
-      </div>
-    </div>
-
-    <div class="content-right">
-      <div class="code-container">
-        <pre id="lua-script-content">
+  <!-- Main content -->
+  <main class="flex-grow p-6">
+    <div class="code-container bg-gray-800 rounded-xl p-4 shadow-lg relative">
+      <pre><code id="lua-script-content" class="language-lua">
 getgenv().sUNCDebug = {
     ["printcheckpoints"] = false,
     ["delaybetweentests"] = 0,
@@ -135,28 +35,39 @@ getgenv().sUNCDebug = {
 }
 
 loadstring(game:HttpGet("https://script.sunc.su/"))()
-        </pre>
-        <button id="copy-button" class="copy-btn">Copy Script</button>
-      </div>
+      </code></pre>
+      <button id="copy-button" class="absolute top-2 right-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 shadow">
+        <i data-lucide="copy" class="w-4 h-4"></i> Copy Script
+      </button>
     </div>
   </main>
 
+  <!-- Footer -->
+  <footer class="p-4 bg-gray-800 text-center text-gray-400 text-sm">
+    <i data-lucide="heart" class="inline w-4 h-4 text-red-500"></i> Được vận hành bởi <span class="font-semibold">Phan Hoàng Quân</span>
+  </footer>
+
+  <!-- Script -->
   <script>
+    // copy script
     document.getElementById("copy-button").addEventListener("click", async () => {
       const scriptText = document.getElementById("lua-script-content").innerText.trim();
       try {
         await navigator.clipboard.writeText(scriptText);
         const btn = document.getElementById("copy-button");
-        btn.textContent = "Copied!";
-        btn.classList.add("copied");
+        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copied!';
+        lucide.createIcons();
         setTimeout(() => {
-          btn.textContent = "Copy Script";
-          btn.classList.remove("copied");
+          btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copy Script';
+          lucide.createIcons();
         }, 2000);
       } catch (err) {
         alert("Không thể copy. Vui lòng copy thủ công.");
       }
     });
+
+    // load icons
+    lucide.createIcons();
   </script>
 </body>
 </html>
