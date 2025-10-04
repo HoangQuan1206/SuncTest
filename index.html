@@ -1,90 +1,235 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>SUNC Script Hub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lua Viewer & Safe Runner</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+  <style>
+    :root{
+      --bg:#120a16; --card:#1c1326; --muted:#a0a0a0; --accent:#7b43a9; --text:#f0f0f0;
+    }
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; background:var(--bg); color:var(--text);}
+    .wrap{max-width:1100px;margin:24px auto;padding:20px;}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .title{font-weight:700;letter-spacing:0.5px}
+    .controls{display:flex;gap:8px}
+    .btn{background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn.warn{background:#2b1b24;color:#fff}
+    .row{display:flex;gap:16px}
+    .left{flex:1}
+    .right{width:360px}
+    pre{background:#24182a;border-radius:8px;padding:14px;overflow:auto;max-height:560px}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#130b14;color:var(--text)}
+    textarea.input{min-height:120px}
+    .status{margin-top:8px;font-size:13px;color:var(--muted)}
+    footer{margin-top:20px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    .danger{color:#ff7b7b}
+    .player{display:flex;gap:8px;align-items:center}
+    .chatbox{background:#0f0b10;border-radius:8px;padding:10px;height:220px;overflow:auto;color:#dcdcdc;font-family:monospace;font-size:13px}
+  </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col min-h-screen">
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="title">Lua Viewer & Safe Runner</div>
+        <div class="meta">Hiển thị và chạy Lua trong sandbox (KHÔNG hỗ trợ API Roblox) — dùng để xem/kiểm thử mã an toàn.</div>
+      </div>
 
-  <!-- Header -->
-  <header class="p-4 flex justify-between items-center bg-gray-800 shadow-md">
-    <h1 class="text-xl font-bold flex items-center gap-2">
-      <i data-lucide="code-2" class="w-6 h-6 text-blue-400"></i> SUNC Script Hub
-    </h1>
-    <nav class="flex gap-4">
-      <a href="https://docs.sunc.su/" target="_blank" class="flex items-center gap-1 hover:text-blue-400">
-        <i data-lucide="book-open" class="w-5 h-5"></i> Documentation
-      </a>
-      <a href="https://www.youtube.com/watch?v=knW7-x7Y7RE" target="_blank" class="flex items-center gap-1 hover:text-green-400">
-        <i data-lucide="music" class="w-5 h-5"></i> Discord
-      </a>
-    </nav>
-  </header>
+      <div class="controls">
+        <button id="openRaw" class="btn">Mở raw GitHub</button>
+        <button id="downloadBtn" class="btn">Tải về</button>
+        <button id="copyBtn" class="btn">Copy</button>
+        <button id="runBtn" class="btn warn">Run (Sandbox)</button>
+      </div>
+    </header>
 
-  <!-- Main -->
-  <main class="flex-grow p-6 space-y-6">
-    <!-- Code Viewer -->
-    <div class="code-container bg-gray-800 rounded-xl p-4 shadow-lg relative">
-      <pre><code id="lua-script-content" class="language-lua">
-getgenv().sUNCDebug = {
-    ["printcheckpoints"] = false,
-    ["delaybetweentests"] = 0,
-    ["printtesttimetaken"] = false,
-}
+    <div class="row">
+      <div class="left">
+        <div style="margin-bottom:8px">
+          <input id="rawUrl" class="input" type="text" value="https://raw.githubusercontent.com/HoangQuan1206/BodySex/refs/heads/main/KaitunBFBanana.lua" />
+        </div>
 
-loadstring(game:HttpGet("https://script.sunc.su/"))()
-      </code></pre>
-      <button id="copy-button" class="absolute top-2 right-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg flex items-center gap-2 shadow">
-        <i data-lucide="copy" class="w-4 h-4"></i> Copy Script
-      </button>
+        <pre><code id="code" class="language-lua">-- Nhấn "Mở raw GitHub" để fetch file và hiển thị ở đây.</code></pre>
+
+        <div class="status" id="status">Trạng thái: sẵn sàng</div>
+      </div>
+
+      <div class="right">
+        <div style="margin-bottom:12px">
+          <div class="small">Music / Discord link</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="openMusic" class="btn">Mở nhạc (YouTube)</button>
+            <button id="openDocs" class="btn">Documentation</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <div class="small">Sandbox Console</div>
+          <div id="console" class="chatbox"></div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="clearConsole" class="btn">Clear</button>
+            <label style="display:flex;align-items:center;gap:8px;color:var(--muted)">
+              <input id="allowStdout" type="checkbox" checked /> Cho in STDOUT trong console
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="small">Quick notes</div>
+          <div class="small meta">Lưu ý: nút Run chỉ chạy Lua thuần trong trình duyệt (Fengari). Mã dùng API Roblox sẽ gây lỗi.</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Console log -->
-    <div class="bg-black p-4 rounded-xl shadow-inner">
-      <h2 class="font-bold mb-2 flex items-center gap-2"><i data-lucide="terminal" class="w-5 h-5"></i> Console</h2>
-      <div id="console-log" class="h-32 overflow-y-auto text-sm font-mono text-green-400"></div>
-    </div>
-  </main>
+    <footer>
+      <div>Được vận hành bởi <strong>Phan Hoàng Quân</strong></div>
+      <div class="small">Deploy: Vercel • Static site</div>
+    </footer>
+  </div>
 
-  <!-- Footer -->
-  <footer class="p-4 bg-gray-800 text-center text-gray-400 text-sm">
-    <i data-lucide="heart" class="inline w-4 h-4 text-red-500"></i> Được vận hành bởi <span class="font-semibold">Phan Hoàng Quân</span>
-  </footer>
+  <!-- Thư viện highlight.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/lua.min.js"></script>
 
-  <!-- Script -->
+  <!-- Fengari (Lua VM in JS) -->
+  <script src="https://unpkg.com/fengari-web/dist/fengari-web.min.js"></script>
+
   <script>
-    // Copy Script
-    document.getElementById("copy-button").addEventListener("click", async () => {
-      const scriptText = document.getElementById("lua-script-content").innerText.trim();
-      try {
-        await navigator.clipboard.writeText(scriptText);
-        logToConsole("Đã copy script vào clipboard!");
-        const btn = document.getElementById("copy-button");
-        btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Copied!';
-        lucide.createIcons();
-        setTimeout(() => {
-          btn.innerHTML = '<i data-lucide="copy" class="w-4 h-4"></i> Copy Script';
-          lucide.createIcons();
-        }, 2000);
-      } catch (err) {
-        logToConsole("❌ Không thể copy script!");
+    // Elements
+    const rawUrlEl = document.getElementById('rawUrl');
+    const openRawBtn = document.getElementById('openRaw');
+    const codeEl = document.getElementById('code');
+    const statusEl = document.getElementById('status');
+    const copyBtn = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const runBtn = document.getElementById('runBtn');
+    const consoleEl = document.getElementById('console');
+    const clearConsoleBtn = document.getElementById('clearConsole');
+    const allowStdout = document.getElementById('allowStdout');
+    const openMusic = document.getElementById('openMusic');
+    const openDocs = document.getElementById('openDocs');
+
+    // Default URLs
+    const DEFAULT_RAW = rawUrlEl.value.trim();
+    const DOCS_URL = 'https://docs.sunc.su/';
+    const MUSIC_URL = 'https://www.youtube.com/watch?v=knW7-x7Y7RE'; // Sơn Tùng (ví dụ)
+
+    // Helpers
+    function setStatus(t){ statusEl.textContent = 'Trạng thái: ' + t; }
+    function log(msg){ 
+      const line = document.createElement('div');
+      line.textContent = '> ' + msg;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+    function clearLog(){ consoleEl.innerHTML = ''; }
+
+    // Fetch raw file
+    async function fetchRaw(url){
+      try{
+        setStatus('Đang tải file...');
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('Fetch lỗi: ' + res.status);
+        const txt = await res.text();
+        codeEl.textContent = txt;
+        hljs.highlightElement(codeEl);
+        setStatus('Đã tải xong.');
+        log('Fetched ' + url);
+      }catch(err){
+        setStatus('Lỗi tải file.');
+        log('Error: ' + err.message);
+      }
+    }
+
+    openRawBtn.addEventListener('click', ()=> fetchRaw(rawUrlEl.value.trim() || DEFAULT_RAW));
+    // load default at start
+    fetchRaw(DEFAULT_RAW);
+
+    // Copy to clipboard
+    copyBtn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(codeEl.textContent);
+        log('Đã copy script vào clipboard.');
+      }catch(e){
+        log('Copy thất bại: ' + e.message);
       }
     });
 
-    // Console log
-    function logToConsole(msg) {
-      const logDiv = document.getElementById("console-log");
-      const line = document.createElement("div");
-      line.textContent = "> " + msg;
-      logDiv.appendChild(line);
-      logDiv.scrollTop = logDiv.scrollHeight;
-    }
+    // Download
+    downloadBtn.addEventListener('click', ()=>{
+      const blob = new Blob([codeEl.textContent], {type:'text/plain;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'script.lua';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      log('File được tải về.');
+    });
 
-    // Init icons
-    lucide.createIcons();
-    logToConsole("Trang đã khởi động thành công ✅");
+    // Open docs / music
+    openDocs.addEventListener('click', ()=> window.open(DOCS_URL, '_blank'));
+    openMusic.addEventListener('click', ()=>{
+      // open in new tab and attempt auto-play (depends on browser autoplay policy)
+      window.open(MUSIC_URL, '_blank');
+      log('Mở nhạc (YouTube) trong tab mới.');
+    });
+
+    // Clear console
+    clearConsoleBtn.addEventListener('click', ()=> clearLog());
+
+    // Sandbox runner using Fengari
+    runBtn.addEventListener('click', ()=>{
+      const src = codeEl.textContent || '';
+      if(!src.trim()){ log('Không có mã để chạy.'); return; }
+      // Warning: do not run unknown exploit code; we only allow safe lua logic.
+      if(!confirm('Cảnh báo: bản Run này CHỈ thực thi Lua thuần trong sandbox (không thể thao tác Roblox). Bạn có chắc muốn chạy?')) return;
+
+      // Prepare fengari environment
+      clearLog();
+      log('Khởi tạo sandbox Lua (fengari)...');
+
+      try{
+        // override print to capture to consoleEl if allowed
+        const L = fengari.lauxlib.luaL_newstate();
+        fengari.lualib.luaL_openlibs(L);
+        // push a custom print function that writes to console
+        fengari.lua.lua_pushjsfunction(L, function(L){
+          const n = fengari.lua.lua_gettop(L);
+          let out = [];
+          for(let i=1;i<=n;i++){
+            out.push(fengari.to_jsstring(fengari.lua.lua_tostring(L, i)));
+          }
+          if(allowStdout.checked) log(out.join('\\t'));
+          return 0;
+        });
+        fengari.lua.lua_setglobal(L, fengari.to_luastring('print'));
+
+        // load and run
+        const status = fengari.lauxlib.luaL_loadstring(L, fengari.to_luastring(src));
+        if(status !== 0){
+          const err = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+          log('Lua load error: ' + err);
+          return;
+        }
+        const callStatus = fengari.lua.lua_pcall(L, 0, fengari.lua.LUA_MULTRET, 0);
+        if(callStatus !== 0){
+          const err = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+          log('Lua runtime error: ' + err);
+          return;
+        }
+        log('Lua executed successfully (sandbox).');
+      }catch(e){
+        log('Runtime exception: ' + e.message);
+      }
+    });
+
+    // highlight initial code (in case)
+    document.addEventListener('DOMContentLoaded', ()=> hljs.highlightElement(codeEl));
   </script>
 </body>
 </html>
