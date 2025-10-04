@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sUNC - It's time for real standards.</title>
     <style>
-        /* CSS được giữ nguyên để giữ giao diện */
+        /* CSS được giữ nguyên phần lớn */
         :root {
             --bg-color: #120a16;
             --primary-color: #7b43a9;
@@ -29,10 +29,7 @@
         }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
+            display: flex; justify-content: space-between; align-items: center; padding: 20px 50px;
         }
 
         .logo { font-size: 24px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; }
@@ -42,12 +39,8 @@
         .nav-icons a:nth-child(3)::before { content: "👾"; }
 
         main {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 50px 100px;
-            min-height: 80vh;
-            position: relative;
+            display: flex; justify-content: space-between; align-items: center; padding: 50px 100px;
+            min-height: 80vh; position: relative;
         }
 
         .background-overlay {
@@ -75,12 +68,16 @@
         .content-right { display: flex; justify-content: flex-end; }
         .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); border: 1px solid rgba(123, 67, 169, 0.3); }
 
+        /* SỬA ĐỔI QUAN TRỌNG: Định dạng cho thẻ <pre> */
         #lua-script-content {
             background-color: #2b1f3c; padding: 20px; border-radius: 8px;
-            white-space: pre-wrap; font-family: 'Consolas', 'Courier New', monospace;
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 0.9em; color: var(--text-color); overflow: auto;
+            /* Đảm bảo thẻ <pre> không thêm margin/padding ngoài ý muốn */
+            margin: 0;
         }
 
+        /* Tô màu cú pháp */
         .key { color: var(--code-highlight); }
         .func { color: #81a2be; }
         .string { color: #e9c46a; }
@@ -123,9 +120,9 @@
     <header>
         <div class="logo">sUNC</div>
         <div class="nav-icons">
-            <a href="#" aria-label="Home"></a>
-            <a href="#" aria-label="GitHub"></a>
-            <a href="#" aria-label="Discord"></a>
+            <a href="#" aria-label="Home">🏠</a>
+            <a href="#" aria-label="GitHub">📚</a>
+            <a href="#" aria-label="Discord">👾</a>
         </div>
     </header>
 
@@ -150,19 +147,14 @@
 
         <div class="content-right">
             <div class="code-container">
-                <div id="lua-script-content">
-                    <span class="func">getgenv</span>().sUNCDebug = {
-                    <br>
-                        [&quot;<span class="string">printcheckpoints</span>&quot;] = <span class="bool">false</span>,
-                    <br>
-                        [&quot;<span class="string">delaybetweentests</span>&quot;] = <span class="num">0</span>,
-                    <br>
-                        [&quot;<span class="string">printtesttimetaken</span>&quot;] = <span class="bool">false</span>,
-                    <br>
-                    }
-                    <br><br>
-                    <span class="func">loadstring</span>(<span class="func">game</span>:<span class="func">HttpGet</span>(&quot;<span class="string">https://script.sunc.su/</span>&quot;))()
-                </div>
+                <pre id="lua-script-content">
+<span class="func">getgenv</span>().sUNCDebug = {
+    [&quot;<span class="string">printcheckpoints</span>&quot;] = <span class="bool">false</span>,
+    [&quot;<span class="string">delaybetweentests</span>&quot;] = <span class="num">0</span>,
+    [&quot;<span class="string">printtesttimetaken</span>&quot;] = <span class="bool">false</span>,
+}
+
+<span class="func">loadstring</span>(<span class="func">game</span>:<span class="func">HttpGet</span>(&quot;<span class="string">https://script.sunc.su/</span>&quot;))()</pre>
 
                 <div class="code-info">
                     <button id="copy-button" class="copy-btn">
@@ -181,38 +173,22 @@
     </main>
 
     
----
-
-## JavaScript Tối Ưu Hóa (Ngắn Gọn Hơn)
-
-Phần này dùng `innerText` để tự động loại bỏ các thẻ HTML, sau đó dùng `.replace()` đơn giản để xử lý các ký tự xuống dòng:
-
-<script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
             const copyButton = document.getElementById('copy-button');
-            const scriptContentDiv = document.getElementById('lua-script-content');
+            const scriptContentPre = document.getElementById('lua-script-content'); // Đổi từ Div sang Pre
 
             copyButton.addEventListener('click', async () => {
-                // 1. Lấy nội dung script. Sử dụng innerText/textContent để bỏ các thẻ <span>.
-                // Tuy nhiên, vì bạn dùng <br> để xuống dòng, ta cần xử lý một chút.
+                // Lấy nội dung script. textContent của thẻ <pre> sẽ giữ nguyên định dạng, bao gồm cả xuống dòng và khoảng trắng.
+                let scriptText = scriptContentPre.textContent;
                 
-                // Cách gọn gàng: lấy toàn bộ HTML, thay <br> thành \n, sau đó dùng textContent để bỏ các thẻ khác.
-                let tempContent = scriptContentDiv.innerHTML
-                    .replace(/<br>/g, '\n') // Thay thế các thẻ <br> bằng ký tự xuống dòng
-                    .replace(/&quot;/g, '"'); // Đảm bảo &quot; trở thành "
-
-                // Tạo một div tạm thời để trích xuất nội dung văn bản (bỏ thẻ <span>)
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = tempContent;
-                
-                // Lấy nội dung thuần túy, loại bỏ các thẻ HTML còn lại
-                const scriptText = tempDiv.textContent || tempDiv.innerText;
+                // Thay thế &quot; thành " (đảm bảo mã sao chép là sạch)
+                scriptText = scriptText.replace(/&quot;/g, '"').trim(); 
 
                 try {
-                    // 2. Sao chép vào clipboard
-                    await navigator.clipboard.writeText(scriptText.trim()); // trim() loại bỏ khoảng trắng dư ở đầu/cuối
+                    await navigator.clipboard.writeText(scriptText);
 
-                    // 3. Phản hồi người dùng
+                    // Phản hồi người dùng
                     copyButton.textContent = 'Copied!';
                     copyButton.classList.add('copied');
 
