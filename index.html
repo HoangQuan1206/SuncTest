@@ -1,51 +1,567 @@
-// --- BEGIN: hash-based loader ---
-// Base raw URL for your GitHub repo (change if repo/path khác)
-const GITHUB_RAW_BASE = "https://raw.githubusercontent.com/HoangQuan1206/BodySex/refs/heads/main/";
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Lua Viewer & Safe Runner - sUNC</title>
 
-// sanitize filename: chỉ cho phép ký tự an toàn (chữ, số, gạch, _, ., -)
-function sanitizeFilename(name) {
-  // loại bỏ các ký tự không mong muốn
+<!-- Highlight.js style -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+
+<style>
+:root{
+  --bg:#0f0710; --card:#1a1220; --muted:#b3b3b3; --accent:#8a4fc0; --accent-2:#5aa6ff; --text:#f5f3f7;
+  --success:#4CAF50; --danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#09050a);-webkit-font-smoothing:antialiased}
+.container{max-width:1180px;margin:18px auto;padding:20px}
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 6px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#6b2fb0);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-family:monospace}
+.title{font-size:1.25rem;font-weight:700}
+.controls{display:flex;gap:8px;align-items:center}
+.btn{background:var(--card);border:1px solid rgba(255,255,255,0.03);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+.btn.warn{background:#3a1e2a;border-color:rgba(255,0,0,0.06)}
+.row{display:flex;gap:18px;margin-top:12px}
+.col-left{flex:1;min-width:320px}
+.col-right{width:360px;min-width:260px}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03);padding:14px;border-radius:12px}
+.top-input{display:flex;gap:8px;align-items:center}
+.input{flex:1;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:#120817;color:var(--text)}
+.small{font-size:13px;color:var(--muted)}
+.code-block{margin-top:10px;border-radius:10px;overflow:auto;border:1px solid rgba(255,255,255,0.03);background:#211428;padding:12px;max-height:520px}
+pre{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:13px;line-height:1.45;color:#e6e1e5}
+.console{height:210px;overflow:auto;padding:10px;border-radius:8px;background:#0b0810;border:1px solid rgba(255,255,255,0.02);font-family:monospace;font-size:13px;color:#b8f2c5}
+.kv{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:8px}
+.switch{display:inline-flex;align-items:center;gap:8px}
+.theme-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.theme-item{padding:6px 10px;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+.theme-item:hover{transform:translateY(-2px)}
+.search{display:flex;gap:8px;margin-top:10px}
+.search input{flex:1;padding:8px;border-radius:8px;background:#120817;border:1px solid rgba(255,255,255,0.03);color:var(--text)}
+.badge{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-size:12px;color:var(--muted)}
+.footer{margin-top:20px;padding:18px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(255,255,255,0.02);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
+.link{color:var(--accent);text-decoration:none}
+.player{display:flex;gap:8px;align-items:center;margin-top:8px}
+.icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+.copy-ok{background:var(--success);color:#fff}
+.highlight{background:rgba(138,79,192,0.12);padding:0 4px;border-radius:4px}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+@media (max-width:880px){.row{flex-direction:column}.col-right{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="brand">
+      <div class="logo">sUNC</div>
+      <div>
+        <div class="title">sUNC - Lua Viewer & Safe Runner</div>
+        <div class="small">Hiển thị & chạy Lua (sandbox) • Không hỗ trợ API Roblox</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="docsBtn" class="btn" title="Documentation">📘 Documentation</button>
+      <button id="discordBtn" class="btn" title="Discord / Music">🎵 Discord</button>
+      <button id="copyBtnTop" class="btn" title="Copy code">📋 Copy</button>
+      <button id="downloadBtn" class="btn" title="Download file">⬇️ Download</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-left">
+      <div class="card">
+        <div class="top-input">
+          <input id="rawUrl" class="input" type="text" placeholder="Raw URL or filename (via hash) e.g. KaitunBFBanana.lua" />
+          <button id="fetchBtn" class="btn">Fetch</button>
+        </div>
+
+        <div class="kv">
+          <div class="small">Status: <span id="statusText" class="badge">ready</span></div>
+          <div class="small">Auto-save: <span id="autosaveText" class="badge">on</span></div>
+        </div>
+
+        <div class="search">
+          <input id="searchInput" placeholder="Search in script (enter to highlight)" />
+          <button id="searchBtn" class="btn">Search</button>
+          <button id="clearSearchBtn" class="btn">Clear</button>
+        </div>
+
+        <div class="code-block card" id="codeBlock">
+          <pre><code id="code" class="language-lua">// Fetch a file (click Fetch) or open with hash like site/#BananaHubKaitun.lua</code></pre>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+          <button id="runBtn" class="btn warn">Run (Sandbox)</button>
+          <button id="formatBtn" class="btn">Format (trim)</button>
+          <div style="flex:1"></div>
+          <label class="switch small"><input id="allowStdout" type="checkbox" checked /> Show stdout</label>
+        </div>
+
+        <div class="note">Cảnh báo: Run chỉ thực thi Lua thuần trong trình duyệt. Mã dùng `game`, RemoteEvent... sẽ lỗi.</div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="small">Console</div>
+          <div style="display:flex;gap:8px">
+            <button id="clearConsole" class="btn">Clear</button>
+            <button id="copyConsole" class="btn">Copy Console</button>
+          </div>
+        </div>
+        <div id="console" class="console"></div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div><strong class="small">Settings</strong></div>
+          <div class="small">Theme</div>
+        </div>
+
+        <div class="theme-list" id="themeList" style="margin-top:8px">
+          <div class="theme-item" data-theme="purple" style="background:linear-gradient(90deg,#7b43a9,#9b5dd5);color:#fff">Purple</div>
+          <div class="theme-item" data-theme="blue" style="background:linear-gradient(90deg,#3b82f6,#60a5fa);color:#fff">Blue</div>
+          <div class="theme-item" data-theme="red" style="background:linear-gradient(90deg,#ef4444,#fb7185);color:#fff">Red</div>
+          <div class="theme-item" data-theme="green" style="background:linear-gradient(90deg,#10b981,#34d399);color:#fff">Green</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="small">Dark / Light</div>
+          <div style="margin-top:8px;display:flex;gap:8px">
+            <button id="darkBtn" class="btn">Dark</button>
+            <button id="lightBtn" class="btn">Light</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="small">Music Player</div>
+          <div class="player">
+            <button id="playMusic" class="btn">▶ Play</button>
+            <button id="pauseMusic" class="btn">⏸ Pause</button>
+            <div id="musicTitle" class="small">No track playing</div>
+          </div>
+          <div class="note">Click Discord button in header to open YouTube in new tab AND play here.</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="small">Quick Actions</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="loadDefault" class="btn">Load Default</button>
+            <button id="openHash" class="btn">Open from Hash</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div class="small">About</div>
+        <div class="note" style="margin-top:8px">sUNC - Viewer by you. Use responsibly. This page will fetch raw Lua from GitHub and show it. It does not enable exploit usage.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>Được vận hành bởi <strong>Phan Hoàng Quân</strong></div>
+    <div class="small">Deployed on Vercel • Static</div>
+  </div>
+</div>
+
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/lua.min.js"></script>
+<script src="https://unpkg.com/fengari-web/dist/fengari-web.min.js"></script>
+
+<script>
+/* =========================
+   Config & Defaults
+   ========================= */
+const DEFAULT_RAW_BASE = "https://raw.githubusercontent.com/HoangQuan1206/BodySex/refs/heads/main/";
+const DEFAULT_FILE = "KaitunBFBanana.lua";
+const DEFAULT_RAW = DEFAULT_RAW_BASE + DEFAULT_FILE;
+const DOCS_URL = "https://docs.sunc.su/";
+const MUSIC_YT = "https://www.youtube.com/watch?v=knW7-x7Y7RE";
+
+/* Elements */
+const rawUrlEl = document.getElementById('rawUrl');
+const fetchBtn = document.getElementById('fetchBtn');
+const codeEl = document.getElementById('code');
+const statusText = document.getElementById('statusText');
+const copyBtnTop = document.getElementById('copyBtnTop');
+const downloadBtn = document.getElementById('downloadBtn');
+const runBtn = document.getElementById('runBtn');
+const consoleEl = document.getElementById('console');
+const clearConsoleBtn = document.getElementById('clearConsole');
+const copyConsoleBtn = document.getElementById('copyConsole');
+const allowStdoutEl = document.getElementById('allowStdout');
+const docsBtn = document.getElementById('docsBtn');
+const discordBtn = document.getElementById('discordBtn');
+const playMusicBtn = document.getElementById('playMusic');
+const pauseMusicBtn = document.getElementById('pauseMusic');
+const musicTitle = document.getElementById('musicTitle');
+const themeItems = document.querySelectorAll('.theme-item');
+const darkBtn = document.getElementById('darkBtn');
+const lightBtn = document.getElementById('lightBtn');
+const loadDefaultBtn = document.getElementById('loadDefault');
+const openHashBtn = document.getElementById('openHash');
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
+const formatBtn = document.getElementById('formatBtn');
+const autosaveText = document.getElementById('autosaveText');
+
+/* localStorage keys */
+const LS_KEY = "sunc_viewer_cfg_v1";
+
+/* config default */
+let cfg = {
+  theme: "purple",
+  dark: true,
+  autosave: true
+};
+
+/* load config */
+try{
+  const rawcfg = localStorage.getItem(LS_KEY);
+  if(rawcfg) cfg = JSON.parse(rawcfg);
+}catch(e){}
+
+/* apply UI from cfg */
+function applyTheme(t){
+  // small mapping
+  const root = document.documentElement;
+  if(t==="purple"){ root.style.setProperty('--accent','#8a4fc0'); root.style.setProperty('--accent-2','#9b5dd5'); }
+  else if(t==="blue"){ root.style.setProperty('--accent','#3b82f6'); root.style.setProperty('--accent-2','#60a5fa'); }
+  else if(t==="red"){ root.style.setProperty('--accent','#ef4444'); root.style.setProperty('--accent-2','#fb7185'); }
+  else if(t==="green"){ root.style.setProperty('--accent','#10b981'); root.style.setProperty('--accent-2','#34d399'); }
+  cfg.theme = t; saveCfg();
+}
+function applyDark(d){
+  cfg.dark = d; saveCfg();
+  if(d){
+    document.body.style.background = "linear-gradient(180deg,var(--bg),#09050a)";
+  } else {
+    document.body.style.background = "#f7f7fb";
+    document.body.style.color = "#111";
+  }
+}
+function saveCfg(){
+  if(cfg.autosave) localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+  autosaveText.textContent = cfg.autosave ? "on" : "off";
+}
+
+/* init */
+applyTheme(cfg.theme); applyDark(cfg.dark); saveCfg();
+
+/* =========================
+   Utility UI helpers
+   ========================= */
+function setStatus(t){ statusText.textContent = t; }
+function log(msg, level="info"){
+  const d = document.createElement('div');
+  const time = new Date().toLocaleTimeString();
+  d.textContent = `[${time}] ${msg}`;
+  d.style.marginBottom = "4px";
+  if(level==="error") d.style.color = "var(--danger)";
+  else if(level==="success") d.style.color = "var(--success)";
+  consoleEl.appendChild(d);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+function clearConsole(){ consoleEl.innerHTML = ""; }
+
+/* =========================
+   Sanitize / Hash-based loader
+   ========================= */
+function sanitizeFilename(name){
+  if(!name) return null;
   const safe = name.replace(/[^A-Za-z0-9._\-\/:]/g, "");
-  // tránh path traversal (nhiều dấu ../)
-  if (safe.includes("..")) return null;
+  if(safe.includes("..")) return null;
   return safe;
 }
-
-// Lấy filename / url từ fragment (location.hash)
-function urlFromHash(hash) {
-  if (!hash) return null;
-  let h = hash.startsWith("#") ? hash.slice(1) : hash;
+function urlFromHash(hash){
+  if(!hash) return null;
+  let h = hash.startsWith('#')? hash.slice(1) : hash;
   h = decodeURIComponent(h.trim());
-  // nếu là full url thì dùng luôn
-  if (/^https?:\/\//i.test(h)) {
+  if(/^https?:\/\//i.test(h)){
     return sanitizeFilename(h) ? h : null;
   }
-  // nếu chứa đường dẫn con (ví dụ folder/file.lua) thì cũng cho phép (sau sanitize)
   const safe = sanitizeFilename(h);
-  if (!safe) return null;
-  return GITHUB_RAW_BASE + safe;
+  if(!safe) return null;
+  return DEFAULT_RAW_BASE + safe;
 }
-
-// Khi trang load, nếu có hash thì set rawUrl và fetch tự động
-function handleHashLoad() {
+function handleHashLoad(){
   const rawFromHash = urlFromHash(window.location.hash);
-  if (rawFromHash) {
+  if(rawFromHash){
     rawUrlEl.value = rawFromHash;
     fetchRaw(rawFromHash);
-    setStatus("Đang tải từ fragment: " + window.location.hash);
+    setStatus("loading from hash");
   } else {
-    // không hợp lệ/không có: giữ behavior mặc định (DEFAULT_RAW)
-    setStatus("Không có fragment hợp lệ — dùng file mặc định.");
-    // nếu bạn muốn tự động tải DEFAULT_RAW, uncomment:
-    // fetchRaw(DEFAULT_RAW);
+    // set placeholder
+    rawUrlEl.value = DEFAULT_RAW;
+  }
+}
+window.addEventListener('hashchange', handleHashLoad);
+
+/* =========================
+   Fetch / Display / Highlight
+   ========================= */
+async function fetchRaw(url){
+  if(!url) return;
+  setStatus("loading...");
+  try{
+    const res = await fetch(url, {cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const txt = await res.text();
+    codeEl.textContent = txt;
+    hljs.highlightElement(codeEl);
+    setStatus("loaded");
+    log("Fetched: " + url, "success");
+  }catch(err){
+    setStatus("load failed");
+    log("Fetch error: " + err.message, "error");
   }
 }
 
-// Lắng nghe thay đổi hash (nếu user cập nhật link mà không reload)
-window.addEventListener("hashchange", () => {
-  handleHashLoad();
+/* initial load */
+rawUrlEl.value = DEFAULT_RAW;
+handleHashLoad();
+
+/* Fetch button */
+fetchBtn.addEventListener('click', ()=>{
+  const v = rawUrlEl.value.trim();
+  if(!v) return;
+  fetchRaw(v);
 });
 
-// gọi 1 lần khi khởi tạo
+/* Load default */
+loadDefaultBtn.addEventListener('click', ()=> fetchRaw(DEFAULT_RAW));
+
+/* Open from Hash (reads current location.hash) */
+openHashBtn.addEventListener('click', ()=> handleHashLoad());
+
+/* =========================
+   Copy / Download
+   ========================= */
+copyBtnTop.addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(codeEl.textContent);
+    log("Copied code to clipboard", "success");
+    copyBtnTop.textContent = "Copied ✓";
+    setTimeout(()=> copyBtnTop.textContent = "📋 Copy", 1600);
+  }catch(e){
+    log("Copy failed: " + e.message, "error");
+  }
+});
+downloadBtn.addEventListener('click', ()=>{
+  const blob = new Blob([codeEl.textContent], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (rawUrlEl.value.split('/').pop() || "script.lua");
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  log("Downloaded file", "success");
+});
+
+/* =========================
+   Search in script
+   ========================= */
+function highlightSearch(term){
+  const txt = codeEl.textContent;
+  if(!term) { codeEl.textContent = txt; hljs.highlightElement(codeEl); return; }
+  // naive highlight: wrap matched terms with marker and use innerHTML
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(escaped, 'gi');
+  const marked = txt.replace(re, (m)=> `@@@${m}@@@`);
+  // Escape HTML then replace tokens
+  const esc = marked.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const withSpan = esc.replace(/@@@(.*?)@@@/g, '<span class="highlight">$1</span>');
+  codeEl.innerHTML = withSpan;
+}
+searchBtn.addEventListener('click', ()=>{
+  const t = searchInput.value.trim();
+  if(!t) return;
+  highlightSearch(t);
+  log("Search for: " + t);
+});
+clearSearchBtn.addEventListener('click', ()=>{
+  hljs.highlightElement(codeEl);
+  searchInput.value = "";
+  log("Search cleared");
+});
+
+/* =========================
+   Format / Trim
+   ========================= */
+formatBtn.addEventListener('click', ()=>{
+  const txt = codeEl.textContent;
+  // lightweight trim: remove leading/trailing blank lines, and convert tabs to 2 spaces
+  const lines = txt.split(/\r?\n/);
+  // remove leading empty
+  while(lines.length && lines[0].trim()==="") lines.shift();
+  while(lines.length && lines[lines.length-1].trim()==="") lines.pop();
+  const fixed = lines.map(l => l.replace(/\t/g,'  ')).join('\n');
+  codeEl.textContent = fixed;
+  hljs.highlightElement(codeEl);
+  log("Formatted code");
+});
+
+/* =========================
+   Sandbox runner (Fengari)
+   ========================= */
+runBtn.addEventListener('click', async ()=>{
+  const src = codeEl.textContent || "";
+  if(!src.trim()){ log("No code to run", "error"); return; }
+  if(!confirm("Chạy mã trong sandbox Lua (chỉ Lua thuần, KHÔNG hỗ trợ Roblox API). Continue?")) return;
+  clearConsole();
+  log("Starting sandbox (fengari)...");
+  try{
+    // create new lua state
+    const L = fengari.lauxlib.luaL_newstate();
+    fengari.lualib.luaL_openlibs(L);
+
+    // push print override to capture prints
+    fengari.lua.lua_pushjsfunction(L, function(Lstate){
+      const n = fengari.lua.lua_gettop(Lstate);
+      let parts = [];
+      for(let i=1;i<=n;i++){
+        const s = fengari.to_jsstring(fengari.lua.lua_tolstring(Lstate,i));
+        parts.push(s);
+      }
+      if(allowStdoutEl.checked) log(parts.join("\t"));
+      return 0;
+    });
+    fengari.lua.lua_setglobal(L, fengari.to_luastring('print'));
+
+    // load code
+    const status = fengari.lauxlib.luaL_loadstring(L, fengari.to_luastring(src));
+    if(status !== 0){
+      const err = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+      log("Lua load error: " + err, "error");
+      return;
+    }
+    // pcall
+    const callStatus = fengari.lua.lua_pcall(L, 0, fengari.lua.LUA_MULTRET, 0);
+    if(callStatus !== 0){
+      const err = fengari.to_jsstring(fengari.lua.lua_tostring(L, -1));
+      log("Lua runtime error: " + err, "error");
+      return;
+    }
+    log("Lua executed (sandbox) successfully", "success");
+  }catch(e){
+    log("Sandbox exception: " + e.message, "error");
+  }
+});
+
+/* =========================
+   Console controls
+   ========================= */
+clearConsoleBtn.addEventListener('click', clearConsole);
+copyConsoleBtn.addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(consoleEl.textContent);
+    log("Console copied to clipboard", "success");
+  }catch(e){ log("Copy console failed: "+e.message, "error"); }
+});
+
+/* =========================
+   Docs / Discord / Music actions
+   ========================= */
+docsBtn.addEventListener('click', ()=> window.open(DOCS_URL, '_blank'));
+
+// discordBtn: open YouTube in new tab and start playing audio in-page (user gesture)
+let audioElem = null;
+discordBtn.addEventListener('click', ()=>{
+  // open youtube in new tab
+  window.open(MUSIC_YT, '_blank');
+  log("Opened music in new tab");
+
+  // create or play embedded audio element (extract audio via youtube not allowed, so we'll embed iframe player)
+  // We'll create an HTML5 audio that streams from a direct mp3 URL if available.
+  // For safety and cross-domain reasons, we will embed a small YouTube iframe player only when user clicks Play below.
+  log("To play inside page, click Play.");
+});
+
+/* music player control (play/pause) */
+let ytIframe = null;
+let iframeLoaded = false;
+function createYTIframe(){
+  if(ytIframe) return;
+  // create a hidden iframe with YouTube embed (autoplay may be blocked; user gesture required)
+  ytIframe = document.createElement('iframe');
+  ytIframe.width = "0"; ytIframe.height = "0";
+  ytIframe.style.border = "0"; ytIframe.style.opacity = "0";
+  // using embed URL with autoplay=1 (may be blocked)
+  ytIframe.src = "https://www.youtube.com/embed/knW7-x7Y7RE?autoplay=1&enablejsapi=1";
+  document.body.appendChild(ytIframe);
+  iframeLoaded = true;
+  musicTitle.textContent = "Sơn Tùng M-TP - Playing (YouTube)";
+}
+
+playMusicBtn.addEventListener('click', ()=>{
+  // user gesture creates iframe and tries to autoplay
+  createYTIframe();
+  log("Attempted to play music (YouTube embed). Browser may block autoplay.");
+});
+pauseMusicBtn.addEventListener('click', ()=>{
+  if(ytIframe){ // we can't easily control iframe without postMessage & YouTube API token; remove instead
+    ytIframe.remove(); ytIframe = null; iframeLoaded = false;
+    musicTitle.textContent = "Stopped";
+    log("Stopped music (removed iframe)");
+  }
+});
+
+/* =========================
+   Theme selection / dark-light
+   ========================= */
+themeItems.forEach(it=>{
+  it.addEventListener('click', ()=>{
+    applyTheme(it.dataset.theme);
+    log("Theme set to " + it.dataset.theme);
+  });
+});
+darkBtn.addEventListener('click', ()=> { applyDark(true); log("Dark mode ON"); });
+lightBtn.addEventListener('click', ()=> { applyDark(false); log("Light mode ON"); });
+
+/* =========================
+   Hash loader on init
+   ========================= */
 handleHashLoad();
-// --- END: hash-based loader ---
+
+/* =========================
+   Auto-save toggle (click on autosave badge to toggle)
+   ========================= */
+autosaveText.addEventListener('click', ()=>{
+  cfg.autosave = !cfg.autosave;
+  saveCfg();
+  log("autosave set to " + cfg.autosave);
+});
+
+/* =========================
+   Keyboard shortcuts
+   ========================= */
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key==='k'){ e.preventDefault(); searchInput.focus(); }
+  if((e.ctrlKey||e.metaKey) && e.key==='b'){ e.preventDefault(); fetchBtn.click(); }
+});
+
+/* =========================
+   Misc helpers & boot logs
+   ========================= */
+log("sUNC Viewer initialized");
+log("Default file: " + DEFAULT_RAW);
+hljs.highlightElement(code);
+
+/* =========================
+   End of script
+   ========================= */
+</script>
+</body>
+</html>
