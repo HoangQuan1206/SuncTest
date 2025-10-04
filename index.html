@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sUNC - It's time for real standards.</title>
     <style>
-        /* CSS cho trang web (Giữ nguyên như bản trước) */
+        /* CSS được giữ nguyên để giữ giao diện */
         :root {
             --bg-color: #120a16;
             --primary-color: #7b43a9;
@@ -15,7 +15,7 @@
             --code-highlight: #ff55ff;
             --button-bg: #2d1c3e;
             --button-hover: #4a3461;
-            --success-color: #4CAF50; /* Màu xanh lá cho thông báo */
+            --success-color: #4CAF50;
         }
 
         body {
@@ -28,7 +28,6 @@
             overflow-x: hidden;
         }
 
-        /* Thanh điều hướng (Header) */
         header {
             display: flex;
             justify-content: space-between;
@@ -36,24 +35,12 @@
             padding: 20px 50px;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--text-color);
-            letter-spacing: 1px;
-        }
-
-        .nav-icons a {
-            color: var(--text-color);
-            margin-left: 20px;
-            font-size: 20px;
-            text-decoration: none;
-        }
+        .logo { font-size: 24px; font-weight: bold; color: var(--text-color); letter-spacing: 1px; }
+        .nav-icons a { color: var(--text-color); margin-left: 20px; font-size: 20px; text-decoration: none; }
         .nav-icons a::before { content: "🏠"; margin-right: 2px; }
         .nav-icons a:nth-child(2)::before { content: "📚"; }
         .nav-icons a:nth-child(3)::before { content: "👾"; }
 
-        /* Phần Chính (Main Content) */
         main {
             display: flex;
             justify-content: space-between;
@@ -64,77 +51,36 @@
         }
 
         .background-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: radial-gradient(circle at 10% 10%, rgba(123, 67, 169, 0.1) 1px, transparent 1px),
                               radial-gradient(circle at 90% 90%, rgba(123, 67, 169, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.5;
-            z-index: 0;
+            background-size: 20px 20px; opacity: 0.5; z-index: 0;
         }
 
-        .content-left, .content-right {
-            flex: 1;
-            padding: 20px;
-            z-index: 1;
-        }
-
+        .content-left, .content-right { flex: 1; padding: 20px; z-index: 1; }
         .content-left { max-width: 500px; }
         .content-left h1 { font-size: 3em; margin-bottom: 20px; color: var(--text-color); }
         .content-left p { font-size: 1.1em; color: var(--secondary-text-color); margin-bottom: 40px; }
 
         .buttons-group { display: flex; gap: 15px; }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-        }
-
+        .btn { padding: 12px 25px; border: none; border-radius: 6px; font-size: 1em; font-weight: 600; cursor: pointer; text-decoration: none; transition: background-color 0.3s; display: flex; align-items: center; }
         .btn-doc { background-color: var(--button-bg); color: var(--text-color); border: 1px solid var(--secondary-text-color); }
         .btn-doc:hover { background-color: var(--button-hover); }
         .btn-discord { background-color: var(--primary-color); color: var(--text-color); }
         .btn-discord:hover { background-color: #9a5ac7; }
-
         .btn-icon { margin-right: 8px; }
         .btn-doc .btn-icon::before { content: "📄"; }
         .btn-discord .btn-icon::before { content: "💬"; }
 
-        /* Nội dung bên phải (Code Block) */
         .content-right { display: flex; justify-content: flex-end; }
+        .code-container { background-color: var(--card-bg); border-radius: 12px; padding: 15px; width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); border: 1px solid rgba(123, 67, 169, 0.3); }
 
-        .code-container {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            width: 450px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(123, 67, 169, 0.3);
-        }
-
-        /* Khối code chính - Dùng ID để JS dễ dàng lấy nội dung */
         #lua-script-content {
-            background-color: #2b1f3c;
-            padding: 20px;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.9em;
-            color: var(--text-color);
-            overflow: auto;
+            background-color: #2b1f3c; padding: 20px; border-radius: 8px;
+            white-space: pre-wrap; font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em; color: var(--text-color); overflow: auto;
         }
 
-        /* Tô màu cú pháp */
         .key { color: var(--code-highlight); }
         .func { color: #81a2be; }
         .string { color: #e9c46a; }
@@ -142,56 +88,27 @@
         .num { color: #9fcc73; }
 
         .code-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #170d20;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 15px; padding: 10px; background-color: #170d20;
+            border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Nút Copy */
         .copy-btn {
-            background-color: var(--button-bg);
-            color: var(--text-color);
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            transition: background-color 0.3s;
+            background-color: var(--button-bg); color: var(--text-color);
+            padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
+            display: flex; align-items: center; transition: background-color 0.3s;
         }
         .copy-btn:hover { background-color: var(--button-hover); }
-
-        /* Icon mô phỏng */
         .copy-btn::before { content: "📋"; margin-right: 5px; }
 
-        /* CSS cho trạng thái sao chép thành công */
-        .copy-btn.copied {
-            background-color: var(--success-color);
-            color: #fff;
-        }
-        .copy-btn.copied::before {
-            content: "✅";
-        }
+        .copy-btn.copied { background-color: var(--success-color); color: #fff; }
+        .copy-btn.copied::before { content: "✅"; }
 
-        .code-disclaimer {
-            font-size: 0.8em;
-            color: var(--secondary-text-color);
-            max-width: 300px;
-        }
+        .code-disclaimer { font-size: 0.8em; color: var(--secondary-text-color); max-width: 300px; }
 
         .scroll-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 30px;
-            color: var(--secondary-text-color);
-            animation: bounce 2s infinite;
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            font-size: 30px; color: var(--secondary-text-color); animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
@@ -199,7 +116,6 @@
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
         }
-
     </style>
 </head>
 <body>
@@ -264,60 +180,53 @@
         </div>
     </main>
 
-    <script>
+    
+---
+
+## JavaScript Tối Ưu Hóa (Ngắn Gọn Hơn)
+
+Phần này dùng `innerText` để tự động loại bỏ các thẻ HTML, sau đó dùng `.replace()` đơn giản để xử lý các ký tự xuống dòng:
+
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const copyButton = document.getElementById('copy-button');
             const scriptContentDiv = document.getElementById('lua-script-content');
 
-            // Hàm trích xuất nội dung mã thuần túy từ khối HTML
-            function getCleanScriptContent() {
-                // Lấy HTML content
-                let html = scriptContentDiv.innerHTML;
-
-                // 1. Loại bỏ các thẻ <span> dùng để highlight (chỉ giữ lại nội dung bên trong)
-                let tempDiv = document.createElement('div');
-                tempDiv.innerHTML = html;
-
-                // 2. Thay thế tất cả <br> bằng ký tự xuống dòng thực tế (\n)
-                let text = tempDiv.innerHTML
-                    .replace(/<br>/g, '\n') // Thay <br> bằng xuống dòng
-                    .replace(/&quot;/g, '"'); // Thay &quot; bằng "
-
-                // 3. Loại bỏ tất cả các thẻ HTML khác (như <span>)
-                tempDiv.innerHTML = text;
-                text = tempDiv.textContent || tempDiv.innerText;
-
-                // 4. Dọn dẹp các khoảng trắng thừa do việc loại bỏ thẻ HTML (ví dụ: ở đầu dòng)
-                text = text.split('\n').map(line => line.trimStart()).join('\n').trim();
-
-                return text;
-            }
-
-
             copyButton.addEventListener('click', async () => {
-                const scriptText = getCleanScriptContent();
+                // 1. Lấy nội dung script. Sử dụng innerText/textContent để bỏ các thẻ <span>.
+                // Tuy nhiên, vì bạn dùng <br> để xuống dòng, ta cần xử lý một chút.
+                
+                // Cách gọn gàng: lấy toàn bộ HTML, thay <br> thành \n, sau đó dùng textContent để bỏ các thẻ khác.
+                let tempContent = scriptContentDiv.innerHTML
+                    .replace(/<br>/g, '\n') // Thay thế các thẻ <br> bằng ký tự xuống dòng
+                    .replace(/&quot;/g, '"'); // Đảm bảo &quot; trở thành "
+
+                // Tạo một div tạm thời để trích xuất nội dung văn bản (bỏ thẻ <span>)
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = tempContent;
+                
+                // Lấy nội dung thuần túy, loại bỏ các thẻ HTML còn lại
+                const scriptText = tempDiv.textContent || tempDiv.innerText;
 
                 try {
-                    // Sử dụng API Clipboard hiện đại
-                    await navigator.clipboard.writeText(scriptText);
+                    // 2. Sao chép vào clipboard
+                    await navigator.clipboard.writeText(scriptText.trim()); // trim() loại bỏ khoảng trắng dư ở đầu/cuối
 
-                    // Thay đổi trạng thái nút để báo sao chép thành công
+                    // 3. Phản hồi người dùng
                     copyButton.textContent = 'Copied!';
                     copyButton.classList.add('copied');
 
-                    // Đặt lại nút sau 2 giây
                     setTimeout(() => {
                         copyButton.textContent = 'Copy Script';
                         copyButton.classList.remove('copied');
                     }, 2000);
 
                 } catch (err) {
-                    console.error('Không thể sao chép văn bản: ', err);
-                    alert('Xin lỗi, trình duyệt của bạn không hỗ trợ sao chép tự động hoặc đã bị từ chối quyền truy cập.');
+                    console.error('Không thể sao chép văn bản:', err);
+                    alert('Lỗi sao chép. Vui lòng sao chép thủ công.');
                 }
             });
         });
     </script>
-
 </body>
 </html>
