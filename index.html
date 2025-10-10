@@ -9,12 +9,13 @@
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f0f23, #1a1a2e); color: #fff; }
-        .navbar { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); }
-        .card { background: rgba(255, 255, 255, 0.1); border: none; backdrop-filter: blur(10px); }
-        .btn-primary { background: linear-gradient(45deg, #00b4d8, #0077b6); border: none; }
-        .btn-primary:hover { background: linear-gradient(45deg, #0077b6, #005a8b); transform: translateY(-2px); }
+        body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; }
+        .navbar { background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card { background: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .btn-primary { background: #007bff; border: none; }
+        .btn-primary:hover { background: #0056b3; transform: translateY(-1px); }
         .btn-success { background: #28a745; }
+        .btn-danger { background: #dc3545; }
         .admin-panel { display: none; } /* Ẩn panel admin ban đầu */
         .product-item { transition: transform 0.3s; }
         .product-item:hover { transform: scale(1.02); }
@@ -26,7 +27,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand" href="#">Shop Cày Thuê Game</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -75,9 +76,7 @@
                                 <label for="dichVu" class="form-label">Chọn dịch vụ</label>
                                 <select class="form-select" id="dichVu" required>
                                     <option value="">Chọn dịch vụ</option>
-                                    <option value="cay-level">Cày Level</option>
-                                    <option value="cay-rank">Cày Rank</option>
-                                    <option value="cay-item">Cày Item</option>
+                                    <!-- Dịch vụ từ localStorage -->
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -170,7 +169,17 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="card p-4 mb-4">
-                        <h3>Thêm sản phẩm tài khoản</h3>
+                        <h3>Thêm dịch vụ cày thuê</h3>
+                        <form onsubmit="addDichVu(event)">
+                            <div class="mb-3">
+                                <label for="dvName" class="form-label">Tên dịch vụ</label>
+                                <input type="text" class="form-control" id="dvName" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Thêm dịch vụ</button>
+                        </form>
+                    </div>
+                    <div class="card p-4 mb-4">
+                        <h3>Thêm tài khoản bán</h3>
                         <form onsubmit="addTaiKhoan(event)">
                             <div class="mb-3">
                                 <label for="tkName" class="form-label">Tên tài khoản</label>
@@ -197,6 +206,10 @@
                     <div id="donCayThueList" class="card p-3">
                         <!-- Danh sách đơn -->
                     </div>
+                    <h3>Danh sách dịch vụ</h3>
+                    <div id="dichVuList" class="card p-3">
+                        <!-- Danh sách dịch vụ -->
+                    </div>
                 </div>
             </div>
             <button class="btn btn-secondary mt-3" onclick="logout()">Đăng xuất</button>
@@ -206,11 +219,12 @@
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Dữ liệu users, products (tài khoản), donCayThue (đơn cày thuê)
+        // Dữ liệu users, products (tài khoản), donCayThue (đơn cày thuê), dichVu (dịch vụ cày thuê)
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let products = JSON.parse(localStorage.getItem('products')) || []; // Tài khoản
         let donCayThue = JSON.parse(localStorage.getItem('donCayThue')) || []; // Đơn cày thuê
+        let dichVu = JSON.parse(localStorage.getItem('dichVu')) || ['cay-level', 'cay-rank', 'cay-item']; // Dịch vụ mặc định
 
         // Hardcode admin
         const ADMIN_EMAIL = 'admin@shop.com';
@@ -225,6 +239,7 @@
                     document.getElementById('adminPanel').style.display = 'block';
                     document.getElementById('homePage').style.display = 'none';
                     loadDonCayThueAdmin();
+                    loadDichVuAdmin();
                 } else {
                     document.getElementById('adminPanel').style.display = 'none';
                     document.getElementById('homePage').style.display = 'block';
@@ -258,7 +273,6 @@
                 currentUser = { email: ADMIN_EMAIL };
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 updateUserStatus();
-                showHome();
                 alert('Đăng nhập admin thành công!');
                 return;
             }
@@ -307,6 +321,7 @@
                 document.getElementById(id).style.display = 'none';
             });
             document.getElementById('cayThuePage').style.display = 'block';
+            loadDichVuUser();
         }
 
         function showTaiKhoan() {
@@ -325,7 +340,7 @@
             const info = document.getElementById('taiKhoanInfo');
             const product = products[productIndex];
             info.innerHTML = `Tên TK: ${product.name}<br>Mật khẩu: ${product.pass}<br>Mô tả: ${product.desc}`;
-            // Giả lập mua xong, xóa sản phẩm sau khi lấy (để không bán lại)
+            // Xóa sản phẩm sau khi lấy (đã mua)
             products.splice(productIndex, 1);
             localStorage.setItem('products', JSON.stringify(products));
         }
@@ -368,6 +383,53 @@
             alert('Thêm tài khoản thành công!');
             e.target.reset();
             loadTaiKhoan(); // Cập nhật nếu cần
+        }
+
+        // Thêm dịch vụ (admin)
+        function addDichVu(e) {
+            e.preventDefault();
+            const name = document.getElementById('dvName').value;
+            dichVu.push(name);
+            localStorage.setItem('dichVu', JSON.stringify(dichVu));
+            alert('Thêm dịch vụ thành công!');
+            e.target.reset();
+            loadDichVuAdmin();
+        }
+
+        // Load dịch vụ cho user (trong form cày thuê)
+        function loadDichVuUser() {
+            const select = document.getElementById('dichVu');
+            select.innerHTML = '<option value="">Chọn dịch vụ</option>';
+            dichVu.forEach(dv => {
+                const option = document.createElement('option');
+                option.value = dv;
+                option.textContent = dv;
+                select.appendChild(option);
+            });
+        }
+
+        // Load dịch vụ cho admin
+        function loadDichVuAdmin() {
+            const list = document.getElementById('dichVuList');
+            list.innerHTML = '';
+            dichVu.forEach((dv, index) => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>${dv}</h6>
+                    <button class="btn btn-danger btn-sm" onclick="deleteDichVu(${index})">Xóa</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Xóa dịch vụ (admin)
+        function deleteDichVu(index) {
+            if (confirm('Xóa dịch vụ này?')) {
+                dichVu.splice(index, 1);
+                localStorage.setItem('dichVu', JSON.stringify(dichVu));
+                loadDichVuAdmin();
+            }
         }
 
         // Đặt đơn cày thuê
