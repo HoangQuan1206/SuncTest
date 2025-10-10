@@ -1,59 +1,154 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php if(file_exists($_SERVER['DOCUMENT_ROOT'].'/install.lock')&&strpos(file_get_contents($_SERVER['DOCUMENT_ROOT'].'/install.lock'),'thanhdieu')!==false)header('Location: /');?>
+<!doctype html>
+<html lang="vi-VN" class="thanhdieuinstaller">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sunc Hub Raw Server</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #c9d1d9;
-      margin: 0;
-      padding: 40px;
-      text-align: center;
-    }
-    h1 {
-      color: #58a6ff;
-    }
-    pre {
-      background: #161b22;
-      padding: 15px;
-      border-radius: 8px;
-      text-align: left;
-      max-width: 600px;
-      margin: 20px auto;
-      overflow-x: auto;
-    }
-    a {
-      color: #58a6ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    footer {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #8b949e;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>WusTeam - Install V2.0.0</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="/admin/assets/img/favicon.png">
+    <script src="/admin/assets/js/bundle.js?ver=3.2.3"></script>
+    <link rel="stylesheet" id="css-main" href="/admin/assets/css/ws.theme.css?ver=3.2.3">
+    <link rel="stylesheet" href="/public/src/vtd/css/custom.css?v=<?=rand(10000,999999)?>">
+    <link rel="stylesheet" type="text/css" href="/public/src/vtd/libs/dialog/toast@1.0.1/fuiToast.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.min.css" rel="stylesheet">
 </head>
-<body>
-  <h1>🚀 Sunc Hub Raw Server</h1>
-  <p>Chào mừng đến với server raw script!</p>
-  <p>Dùng link sau trong Roblox để chạy script:</p>
-
-  <pre>
-loadstring(game:HttpGet("https://sunc.vercel.app/Kaitun.lua"))()
-  </pre>
-
-  <p>Bạn có thể mở trực tiếp file raw: 
-    <a href="https://sunc.vercel.app/Kaitun.lua" target="_blank">Kaitun.lua</a>
-  </p>
-
-  <footer>
-    Made with ❤️ on Vercel | Sunc Hub 2025
-  </footer>
+<body class="nk-body npc-default pg-survey no-touch nk-nio-theme dark-mode" theme="dark">
+<div id="fui-toast"></div>
+    <div class="nk-app-root">
+        <div class="nk-main ">
+            <div class="nk-wrap nk-wrap-nosidebar">
+                <div class="nk-content ">
+                    <div class="nk-split nk-split-page nk-split-lg">
+                        <div class="nk-split-content bg-dark is-dark p-5 d-flex justify-between flex-column text-center w-50">
+                            <a href="/" class="logo-link nk-sidebar-logo"></a>
+                            <div class="text-block"><img class="nk-survey-gfx mb-5" style="pointer-events:none;user-select:none;" src="/public/src/vtd/img/svg/survey.svg" alt="">
+                                <h3 class="text-white">Welcome to <b class="td-home">ThanhDieuInstaller</b></h3>
+                                <p>Chào mừng đến với trình cấu hình cơ sở dữ liệu.</p>
+                            </div>
+                            <p>© 2023 WusTeam. Developed by ThanhDieu</p>
+                        </div>
+                        <div class="nk-split-content nk-split-stretch bg-white p-5 d-flex justify-center align-center flex-column">
+                            <div class="wide-xs-fix">
+                                <form class="nk-stepper stepper-init is-alter" id="thanhdieu-installer-v2">
+                                    <div class="nk-stepper-content">
+                                        <div class="nk-stepper-progress stepper-progress mb-4">
+                                            <div class="stepper-progress-count mb-2"></div>
+                                            <div class="progress progress-md">
+                                                <div class="progress-bar stepper-progress-bar"></div>
+                                            </div>
+                                        </div>
+                                        <div class="nk-stepper-steps stepper-steps">
+                                            <div class="nk-stepper-step">
+                                                <h5 class="title mb-3">Thông Tin Kết Nối</h5>
+                                                <div class="row g-3">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="__ThanhDieuDbServer">Database Server (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" value="localhost" name="__ThanhDieuDbServer" placeholder="Mặc định localhost" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="__ThanhDieuDbName">Database Name (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" name="__ThanhDieuDbName" placeholder="Tên bảng CSDL" value="vlxx" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="__ThanhDieuDbUser">Database Username (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" name="__ThanhDieuDbUser" value="root" placeholder="Tài khoản CSDL" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="__ThanhDieuDbPwd">Database Password (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" name="__ThanhDieuDbPwd" placeholder="Mật khẩu CSDL">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="nk-stepper-step">
+                                                <h5 class="title mb-3">Cấu Hình Tài Khoản</h5>
+                                                <ul class="row g-3">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="hovaten">Họ Và Tên (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" value="Vương Thanh Diệu" name="hovaten" placeholder="Họ và tên hiển thị" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="taikhoan">Tài Khoản (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" value="thanhdieu" name="taikhoan" placeholder="Tài khoản dùng để đăng nhập" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="matkhau">Mật Khẩu (<b class="text-danger">*</b>)</label>
+                                                            <div class="form-control-wrap">
+                                                                <input type="text" class="form-control valid" value="1" name="matkhau" placeholder="Mật khẩu dùng để đăng nhập" required="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label class="form-label" for="quyenhan">Vai Trò</label>
+                                                            <div class="form-control-wrap ">
+                                                                <div class="form-control-select">
+                                                                    <select class="form-control" name="quyenhan">
+                                                                        <option value="admin">Quản Trị Viên</option>
+                                                                        <option value="partner">Đối Tác</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ul>
+                                            </div>
+                                            <div class="nk-stepper-step">
+                                                <div class="pt-4 pb-2"><em class="icon icon-circle icon-circle-xxl mb-4 ni ni-check bg-primary-dim"></em>
+                                                    <h5 class="title mb-2">Tất Cả Sẵn Sàng</h5>
+                                                    <p>Hãy nhấn cài đặt để có thể cấu hình triển khai máy chủ</p>
+                                                    <div class="ws-message"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <ul class="nk-stepper-pagination pt-4 gx-4 gy-2 stepper-pagination">
+                                            <li class="step-prev">
+                                                <button type="button" class="btn btn-dim btn-primary"><i class="ri-arrow-left-line"></i>&ensp;Trở Lại</button>
+                                            </li>
+                                            <li class="step-next">
+                                                <button type="button" class="btn btn-primary">Tiếp Tục&ensp;<i class="ri-arrow-right-line"></i></button>
+                                            </li>
+                                            <li class="step-submit">
+                                                <input type="hidden" name="action" value="thanhdieu-installer-v2">
+                                                <button class="config-now btn btn-primary text-nowrap">Cài Đặt&ensp;<i class="ri-settings-2-line"></i></button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/admin/assets/js/bundle.js?ver=3.2.3"></script>
+    <script src="/admin/assets/js/scripts.js?ver=3.2.3"></script>
+    <script src="/public/src/vtd/libs/dialog/toast@1.0.1/fuiToast.min.js"></script>
+    <script src="/public/src/vtd/js/service/installer.js?ver=<?=random_int(1,100)?>"></script>
 </body>
 </html>
