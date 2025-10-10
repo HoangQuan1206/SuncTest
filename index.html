@@ -11,118 +11,684 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; }
         .navbar { background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header { background: #ffffff; padding: 20px 0; border-bottom: 1px solid #dee2e6; }
-        .logo { font-size: 24px; font-weight: 600; color: #007bff; }
-        .card { background: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: box-shadow 0.3s; }
-        .card:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .card { background: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .btn-primary { background: #007bff; border: none; }
         .btn-primary:hover { background: #0056b3; transform: translateY(-1px); }
         .btn-success { background: #28a745; }
         .btn-danger { background: #dc3545; }
         .btn-warning { background: #ffc107; color: #212529; }
-        .admin-panel, .user-panel { display: none; }
+        .admin-panel, .user-panel { display: none; } /* Ẩn panel admin và user ban đầu */
         .product-item { transition: transform 0.3s; }
         .product-item:hover { transform: scale(1.02); }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         .status-pending { color: #ffc107; }
         .status-done { color: #28a745; }
-        footer { background: #f8f9fa; padding: 20px 0; margin-top: 50px; border-top: 1px solid #dee2e6; text-align: center; color: #6c757d; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <a class="logo" href="#">Shop Cày Thuê Game</a>
-                </div>
-                <div class="col-md-6">
-                    <ul class="nav nav-pills justify-content-center">
-                        <li class="nav-item"><a class="nav-link active" href="#" onclick="showHome()">Trang chủ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="showCayThue()">Cày Thuê</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="showTaiKhoan()">Tài khoản</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#" onclick="showUserPanel()">Lịch sử</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 text-end">
-                    <span id="userStatus" class="me-2">Khách</span>
-                    <span id="walletStatus" class="badge bg-light text-dark">Số dư: 0 VND</span>
-                </div>
+            <a class="navbar-brand" href="#">Shop Cày Thuê Game</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showHome()">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showLogin()">Đăng nhập</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showRegister()">Đăng ký</a></li>
+                    <li class="nav-item"><span class="nav-link" id="userStatus">Khách</span></li>
+                    <li class="nav-item"><span class="nav-link" id="walletStatus">Số dư: 0 VND</span></li>
+                </ul>
             </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Main Content -->
-    <main class="container mt-5 pt-5">
-        <!-- Trang chủ (Sản phẩm & Dịch vụ Grid) -->
+    <div class="container mt-5 pt-5">
+        <!-- Trang chủ (Sản phẩm & Dịch vụ) -->
         <div id="homePage" class="fade-in">
             <h1 class="text-center mb-4">Sản phẩm & Dịch vụ</h1>
-            <div class="row" id="productGrid">
-                <!-- Grid sản phẩm sẽ load động -->
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3">
+                    <div class="card p-4 text-center">
+                        <h3>Cày Thuê</h3>
+                        <button class="btn btn-primary w-100 mt-3" onclick="showCayThue()">Chọn dịch vụ</button>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card p-4 text-center">
+                        <h3>Tài khoản</h3>
+                        <button class="btn btn-primary w-100 mt-3" onclick="showTaiKhoan()">Xem danh sách</button>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card p-4 text-center">
+                        <h3>Lịch sử</h3>
+                        <button class="btn btn-primary w-100 mt-3" onclick="showUserPanel()">Xem lịch sử</button>
+                    </div>
+                </div>
             </div>
             <div class="text-center mt-4">
-                <button class="btn btn-warning" onclick="napTien()">Nạp tiền (+100,000 VND)</button>
+                <button class="btn btn-warning" onclick="napTien()">Nạp tiền (Giả lập +100,000 VND)</button>
             </div>
         </div>
 
-        <!-- Các trang khác (giữ nguyên từ mã trước, nhưng tích hợp grid nếu cần) -->
-        <!-- ... (copy các div từ mã trước: cayThuePage, taiKhoanPage, layTaiKhoanPage, registerPage, loginPage, userPanel, adminPanel) ... -->
-        <!-- Để ngắn gọn, tôi giữ nguyên logic, bạn có thể copy từ mã trước vào đây -->
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Shop Cày Thuê Game. Được vận hành bởi Phan Hoàng Quân. | Liên hệ: admin@shop.com</p>
+        <!-- Trang Cày Thuê -->
+        <div id="cayThuePage" class="fade-in" style="display: none;">
+            <h1 class="text-center mb-4">Dịch vụ Cày Thuê</h1>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <form onsubmit="datDonCayThue(event)">
+                            <div class="mb-3">
+                                <label for="dichVu" class="form-label">Chọn dịch vụ</label>
+                                <select class="form-select" id="dichVu" required>
+                                    <option value="">Chọn dịch vụ</option>
+                                    <!-- Dịch vụ từ localStorage -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tenTK" class="form-label">Tên tài khoản</label>
+                                <input type="text" class="form-control" id="tenTK" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="matKhau" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="matKhau" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ghiChu" class="form-label">Ghi chú</label>
+                                <textarea class="form-control" id="ghiChu" rows="3" required></textarea>
+                            </div>
+                            <p class="text-muted">Giá dịch vụ: 10,000 VND</p>
+                            <button type="submit" class="btn btn-primary w-100">Đặt đơn</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="showHome()">Quay lại</button>
         </div>
-    </footer>
+
+        <!-- Trang Tài khoản -->
+        <div id="taiKhoanPage" class="fade-in" style="display: none;">
+            <h1 class="text-center mb-4">Tài khoản</h1>
+            <div class="mb-4">
+                <input type="text" class="form-control" id="searchTaiKhoan" placeholder="Tìm kiếm theo tên hoặc mô tả..." oninput="searchTaiKhoan()">
+            </div>
+            <div id="taiKhoanList" class="row">
+                <!-- Danh sách tài khoản -->
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="showHome()">Quay lại</button>
+        </div>
+
+        <!-- Trang Lấy Tài khoản sau mua -->
+        <div id="layTaiKhoanPage" class="fade-in" style="display: none;">
+            <h1 class="text-center mb-4">Thông tin tài khoản</h1>
+            <div class="card p-4">
+                <p id="taiKhoanInfo"></p>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="showTaiKhoan()">Quay lại</button>
+        </div>
+
+        <!-- Trang đăng ký -->
+        <div id="registerPage" class="fade-in" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h2 class="text-center mb-4">Đăng ký tài khoản</h2>
+                        <form onsubmit="registerUser(event)">
+                            <div class="mb-3">
+                                <label for="regEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="regEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="regPassword" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="regPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+                        </form>
+                        <p class="text-center mt-3">Đã có tài khoản? <a href="#" onclick="showLogin()">Đăng nhập</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trang đăng nhập -->
+        <div id="loginPage" class="fade-in" style="display: none;">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h2 class="text-center mb-4">Đăng nhập</h2>
+                        <form onsubmit="loginUser(event)">
+                            <div class="mb-3">
+                                <label for="loginEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="loginEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="loginPassword" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="loginPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                        </form>
+                        <p class="text-center mt-3">Chưa có tài khoản? <a href="#" onclick="showRegister()">Đăng ký</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Panel (Lịch sử) -->
+        <div id="userPanel" class="user-panel fade-in" style="display: none;">
+            <h1 class="text-center mb-4">Lịch sử</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Lịch sử mua tài khoản</h3>
+                    <div id="lichSuMua" class="card p-3">
+                        <!-- Lịch sử mua -->
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Lịch sử đơn cày thuê</h3>
+                    <div id="lichSuDon" class="card p-3">
+                        <!-- Lịch sử đơn -->
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="showHome()">Quay lại</button>
+        </div>
+
+        <!-- Panel Admin -->
+        <div id="adminPanel" class="admin-panel fade-in" style="display: none;">
+            <h1 class="text-center mb-4">Panel Admin</h1>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card p-4 mb-4">
+                        <h3>Thêm dịch vụ cày thuê</h3>
+                        <form onsubmit="addDichVu(event)">
+                            <div class="mb-3">
+                                <label for="dvName" class="form-label">Tên dịch vụ</label>
+                                <input type="text" class="form-control" id="dvName" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Thêm dịch vụ</button>
+                        </form>
+                    </div>
+                    <h3>Danh sách dịch vụ</h3>
+                    <div id="dichVuList" class="card p-3">
+                        <!-- Danh sách dịch vụ -->
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-4 mb-4">
+                        <h3>Thêm tài khoản bán</h3>
+                        <form onsubmit="addTaiKhoan(event)">
+                            <div class="mb-3">
+                                <label for="tkName" class="form-label">Tên tài khoản</label>
+                                <input type="text" class="form-control" id="tkName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tkPass" class="form-label">Mật khẩu</label>
+                                <input type="text" class="form-control" id="tkPass" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tkPrice" class="form-label">Giá (VND)</label>
+                                <input type="number" class="form-control" id="tkPrice" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tkDesc" class="form-label">Mô tả</label>
+                                <textarea class="form-control" id="tkDesc" rows="3" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Thêm tài khoản</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h3>Lịch sử đơn cày thuê</h3>
+                    <div id="donCayThueList" class="card p-3">
+                        <!-- Danh sách đơn -->
+                    </div>
+                    <h3>Lịch sử mua tài khoản</h3>
+                    <div id="lichSuMuaAdmin" class="card p-3">
+                        <!-- Lịch sử mua -->
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="logout()">Đăng xuất</button>
+        </div>
+    </div>
 
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Logic từ mã trước (users, currentUser, products, donCayThue, dichVu, lichSuMua, functions như registerUser, loginUser, v.v.)
-        // Thêm load grid sản phẩm cho homePage
-        function loadProductGrid() {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
-            // Thêm card cày thuê và tài khoản
-            const cayThueCard = `
-                <div class="col-md-6 mb-4">
-                    <div class="card product-item h-100">
-                        <img src="https://via.placeholder.com/300x200?text=Cay+Thue" class="card-img-top" alt="Cày Thuê">
-                        <div class="card-body">
-                            <h5 class="card-title">Dịch vụ Cày Thuê</h5>
-                            <p class="card-text">Chọn dịch vụ cày level, rank, item...</p>
-                            <button class="btn btn-primary w-100" onclick="showCayThue()">Chọn dịch vụ</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            const taiKhoanCard = `
-                <div class="col-md-6 mb-4">
-                    <div class="card product-item h-100">
-                        <img src="https://via.placeholder.com/300x200?text=Tai+Khoan" class="card-img-top" alt="Tài khoản">
-                        <div class="card-body">
-                            <h5 class="card-title">Tài khoản Game</h5>
-                            <p class="card-text">Danh sách tài khoản sẵn có.</p>
-                            <button class="btn btn-primary w-100" onclick="showTaiKhoan()">Xem danh sách</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            grid.innerHTML = cayThueCard + taiKhoanCard;
+        // Dữ liệu users, products (tài khoản), donCayThue (đơn cày thuê), dichVu (dịch vụ cày thuê), lichSuMua (lịch sử mua tài khoản)
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let products = JSON.parse(localStorage.getItem('products')) || []; // Tài khoản
+        let donCayThue = JSON.parse(localStorage.getItem('donCayThue')) || []; // Đơn cày thuê
+        let dichVu = JSON.parse(localStorage.getItem('dichVu')) || ['Cày Level', 'Cày Rank', 'Cày Item']; // Dịch vụ mặc định
+        let lichSuMua = JSON.parse(localStorage.getItem('lichSuMua')) || []; // Lịch sử mua tài khoản toàn bộ
+
+        // Hardcode admin
+        const ADMIN_EMAIL = 'admin@shop.com';
+        const ADMIN_PASSWORD = 'admin123';
+        const GIA_DICH_VU = 10000; // Giá dịch vụ cày thuê
+
+        // Cập nhật trạng thái user và wallet
+        function updateUserStatus() {
+            const status = document.getElementById('userStatus');
+            const walletStatus = document.getElementById('walletStatus');
+            if (currentUser) {
+                status.textContent = currentUser.email;
+                walletStatus.textContent = `Số dư: ${currentUser.wallet || 0} VND`;
+                if (currentUser.email === ADMIN_EMAIL) {
+                    document.getElementById('adminPanel').style.display = 'block';
+                    document.getElementById('homePage').style.display = 'none';
+                    document.getElementById('userPanel').style.display = 'none';
+                    loadDonCayThueAdmin();
+                    loadLichSuMuaAdmin();
+                    loadDichVuAdmin();
+                } else {
+                    document.getElementById('adminPanel').style.display = 'none';
+                    document.getElementById('homePage').style.display = 'block';
+                    document.getElementById('userPanel').style.display = 'none';
+                }
+            } else {
+                status.textContent = 'Khách';
+                walletStatus.textContent = 'Số dư: 0 VND';
+            }
         }
 
-        // Gọi loadProductGrid khi showHome()
+        // Đăng ký
+        function registerUser(e) {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            if (users.find(u => u.email === email)) {
+                alert('Email đã tồn tại!');
+                return;
+            }
+            users.push({ email, password, wallet: 0, lichSuDon: [], lichSuMua: [] });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Đăng ký thành công! Hãy đăng nhập.');
+            showLogin();
+        }
+
+        // Đăng nhập
+        function loginUser(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                currentUser = { email: ADMIN_EMAIL, wallet: Infinity };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUserStatus();
+                alert('Đăng nhập admin thành công!');
+                return;
+            }
+            const user = users.find(u => u.email === email && u.password === password);
+            if (!user) {
+                alert('Email hoặc mật khẩu sai!');
+                return;
+            }
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateUserStatus();
+            showHome();
+            alert('Đăng nhập thành công!');
+        }
+
+        // Đăng xuất
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUserStatus();
+            showHome();
+        }
+
+        // Nạp tiền giả lập
+        function napTien() {
+            if (!currentUser || currentUser.email === ADMIN_EMAIL) {
+                alert('Chỉ người dùng thường mới nạp tiền!');
+                return;
+            }
+            currentUser.wallet = (currentUser.wallet || 0) + 100000;
+            updateWallet();
+            alert('Nạp 100,000 VND thành công!');
+        }
+
+        // Cập nhật wallet cho user
+        function updateWallet() {
+            if (currentUser && currentUser.email !== ADMIN_EMAIL) {
+                const userIndex = users.findIndex(u => u.email === currentUser.email);
+                if (userIndex !== -1) {
+                    users[userIndex].wallet = currentUser.wallet;
+                    users[userIndex].lichSuDon = currentUser.lichSuDon;
+                    users[userIndex].lichSuMua = currentUser.lichSuMua;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserStatus();
+                }
+            }
+        }
+
+        // Hiển thị trang
         function showHome() {
-            // ... (logic từ mã trước)
-            loadProductGrid();
+            ['registerPage', 'loginPage', 'cayThuePage', 'taiKhoanPage', 'layTaiKhoanPage', 'adminPanel', 'userPanel'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('homePage').style.display = 'block';
         }
 
-        // Các function khác giữ nguyên từ mã trước
-        // ... (copy toàn bộ script từ mã trước vào đây)
+        function showRegister() {
+            document.getElementById('registerPage').style.display = 'block';
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('homePage').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('registerPage').style.display = 'none';
+            document.getElementById('homePage').style.display = 'none';
+        }
+
+        function showCayThue() {
+            ['homePage', 'taiKhoanPage', 'adminPanel', 'userPanel'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('cayThuePage').style.display = 'block';
+            loadDichVuUser();
+        }
+
+        function showTaiKhoan() {
+            ['homePage', 'cayThuePage', 'adminPanel', 'userPanel'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('taiKhoanPage').style.display = 'block';
+            loadTaiKhoan();
+        }
+
+        function showUserPanel() {
+            ['homePage', 'adminPanel'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('userPanel').style.display = 'block';
+            loadLichSuUser();
+        }
+
+        function showLayTaiKhoan(productIndex) {
+            ['taiKhoanPage'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
+            document.getElementById('layTaiKhoanPage').style.display = 'block';
+            const info = document.getElementById('taiKhoanInfo');
+            const product = products[productIndex];
+            info.innerHTML = `Tên TK: ${product.name}<br>Mật khẩu: ${product.pass}<br>Mô tả: ${product.desc}`;
+            // Lưu lịch sử mua cho user và admin
+            const buyDate = new Date().toLocaleDateString('vi-VN');
+            currentUser.lichSuMua.push({ name: product.name, desc: product.desc, price: product.price, date: buyDate });
+            lichSuMua.push({ name: product.name, desc: product.desc, price: product.price, userEmail: currentUser.email, date: buyDate });
+            localStorage.setItem('lichSuMua', JSON.stringify(lichSuMua));
+            // Xóa sản phẩm sau khi mua
+            products.splice(productIndex, 1);
+            localStorage.setItem('products', JSON.stringify(products));
+            updateWallet();
+        }
+
+        // Load danh sách tài khoản
+        function loadTaiKhoan() {
+            const list = document.getElementById('taiKhoanList');
+            list.innerHTML = '';
+            products.forEach((product, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4 product-item';
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Tài khoản #${index + 1}</h5>
+                            <p class="card-text">Ngày đăng: ${product.date}</p>
+                            <p class="card-text">${product.desc}</p>
+                            <p class="card-text"><strong>Giá: ${product.price} VND</strong></p>
+                            <button class="btn btn-primary w-100" onclick="buyTaiKhoan(${index})">Mua</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(col);
+            });
+            if (products.length === 0) {
+                list.innerHTML = '<p class="text-center text-muted">Chưa có tài khoản nào.</p>';
+            }
+        }
+
+        // Tìm kiếm tài khoản
+        function searchTaiKhoan() {
+            const search = document.getElementById('searchTaiKhoan').value.toLowerCase();
+            const list = document.getElementById('taiKhoanList');
+            list.innerHTML = '';
+            const filtered = products.filter(product => product.name.toLowerCase().includes(search) || product.desc.toLowerCase().includes(search));
+            filtered.forEach((product, index) => {
+                const col = document.createElement('div');
+                col.className = 'col-md-4 mb-4 product-item';
+                col.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Tài khoản #${index + 1}</h5>
+                            <p class="card-text">Ngày đăng: ${product.date}</p>
+                            <p class="card-text">${product.desc}</p>
+                            <p class="card-text"><strong>Giá: ${product.price} VND</strong></p>
+                            <button class="btn btn-primary w-100" onclick="buyTaiKhoan(${index})">Mua</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(col);
+            });
+            if (filtered.length === 0) {
+                list.innerHTML = '<p class="text-center text-muted">Không tìm thấy tài khoản.</p>';
+            }
+        }
+
+        // Mua tài khoản (kiểm tra tiền)
+        function buyTaiKhoan(index) {
+            if (!currentUser || currentUser.email === ADMIN_EMAIL) {
+                alert('Vui lòng đăng nhập tài khoản người dùng để mua!');
+                return;
+            }
+            const product = products[index];
+            if (currentUser.wallet < product.price) {
+                alert('Số dư không đủ!');
+                return;
+            }
+            currentUser.wallet -= product.price;
+            showLayTaiKhoan(index);
+            updateWallet();
+            alert('Mua thành công!');
+        }
+
+        // Thêm tài khoản (admin)
+        function addTaiKhoan(e) {
+            e.preventDefault();
+            const name = document.getElementById('tkName').value;
+            const pass = document.getElementById('tkPass').value;
+            const price = parseInt(document.getElementById('tkPrice').value);
+            const desc = document.getElementById('tkDesc').value;
+            const date = new Date().toLocaleDateString('vi-VN');
+            products.push({ name, pass, price, desc, date });
+            localStorage.setItem('products', JSON.stringify(products));
+            alert('Thêm tài khoản thành công!');
+            e.target.reset();
+            loadTaiKhoan(); // Cập nhật nếu cần
+        }
+
+        // Thêm dịch vụ (admin)
+        function addDichVu(e) {
+            e.preventDefault();
+            const name = document.getElementById('dvName').value;
+            dichVu.push(name);
+            localStorage.setItem('dichVu', JSON.stringify(dichVu));
+            alert('Thêm dịch vụ thành công!');
+            e.target.reset();
+            loadDichVuAdmin();
+        }
+
+        // Load dịch vụ cho user
+        function loadDichVuUser() {
+            const select = document.getElementById('dichVu');
+            select.innerHTML = '<option value="">Chọn dịch vụ</option>';
+            dichVu.forEach(dv => {
+                const option = document.createElement('option');
+                option.value = dv;
+                option.textContent = dv;
+                select.appendChild(option);
+            });
+        }
+
+        // Load dịch vụ cho admin
+        function loadDichVuAdmin() {
+            const list = document.getElementById('dichVuList');
+            list.innerHTML = '';
+            dichVu.forEach((dv, index) => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>${dv}</h6>
+                    <button class="btn btn-danger btn-sm" onclick="deleteDichVu(${index})">Xóa</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Xóa dịch vụ (admin)
+        function deleteDichVu(index) {
+            if (confirm('Xóa dịch vụ này?')) {
+                dichVu.splice(index, 1);
+                localStorage.setItem('dichVu', JSON.stringify(dichVu));
+                loadDichVuAdmin();
+            }
+        }
+
+        // Đặt đơn cày thuê (kiểm tra tiền)
+        function datDonCayThue(e) {
+            e.preventDefault();
+            if (!currentUser || currentUser.email === ADMIN_EMAIL) {
+                alert('Vui lòng đăng nhập tài khoản người dùng để đặt đơn!');
+                return;
+            }
+            if (currentUser.wallet < GIA_DICH_VU) {
+                alert('Số dư không đủ!');
+                return;
+            }
+            const dichVu = document.getElementById('dichVu').value;
+            const tenTK = document.getElementById('tenTK').value;
+            const matKhau = document.getElementById('matKhau').value;
+            const ghiChu = document.getElementById('ghiChu').value;
+            const status = 'pending'; // Trạng thái ban đầu
+            const userEmail = currentUser.email;
+            donCayThue.push({ dichVu, tenTK, matKhau, ghiChu, status, userEmail });
+            currentUser.wallet -= GIA_DICH_VU;
+            currentUser.lichSuDon.push({ dichVu, tenTK, ghiChu, status });
+            localStorage.setItem('donCayThue', JSON.stringify(donCayThue));
+            updateWallet();
+            alert('Đặt đơn thành công! Admin sẽ xử lý.');
+            e.target.reset();
+            showHome();
+        }
+
+        // Load đơn cày thuê cho admin
+        function loadDonCayThueAdmin() {
+            const list = document.getElementById('donCayThueList');
+            list.innerHTML = '';
+            donCayThue.forEach((don, index) => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>Dịch vụ: ${don.dichVu} (Người dùng: ${don.userEmail})</h6>
+                    <p>Tên TK: ${don.tenTK}</p>
+                    <p>Mật khẩu: ${don.matKhau}</p>
+                    <p>Ghi chú: ${don.ghiChu}</p>
+                    <p>Trạng thái: <span class="${don.status === 'pending' ? 'status-pending' : 'status-done'}">${don.status === 'pending' ? 'Đang chờ' : 'Đã xong'}</span></p>
+                    <button class="btn btn-success btn-sm" onclick="updateDonStatus(${index}, 'done')">Đánh dấu hoàn thành</button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Cập nhật trạng thái đơn (admin)
+        function updateDonStatus(index, status) {
+            donCayThue[index].status = status;
+            localStorage.setItem('donCayThue', JSON.stringify(donCayThue));
+            loadDonCayThueAdmin();
+            // Cập nhật lịch sử user
+            const userIndex = users.findIndex(u => u.email === donCayThue[index].userEmail);
+            if (userIndex !== -1) {
+                const donUserIndex = users[userIndex].lichSuDon.findIndex(d => d.tenTK === donCayThue[index].tenTK);
+                if (donUserIndex !== -1) {
+                    users[userIndex].lichSuDon[donUserIndex].status = status;
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+            }
+        }
+
+        // Load lịch sử cho user
+        function loadLichSuUser() {
+            if (!currentUser || currentUser.email === ADMIN_EMAIL) {
+                alert('Chỉ người dùng thường mới xem lịch sử!');
+                return;
+            }
+            const lichSuMuaList = document.getElementById('lichSuMua');
+            lichSuMuaList.innerHTML = '';
+            currentUser.lichSuMua.forEach(product => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>Tài khoản: ${product.name}</h6>
+                    <p>Mô tả: ${product.desc}</p>
+                    <p>Giá: ${product.price} VND</p>
+                    <p>Ngày mua: ${product.date}</p>
+                `;
+                lichSuMuaList.appendChild(div);
+            });
+            if (currentUser.lichSuMua.length === 0) {
+                lichSuMuaList.innerHTML = '<p class="text-muted">Chưa có lịch sử mua.</p>';
+            }
+
+            const lichSuDonList = document.getElementById('lichSuDon');
+            lichSuDonList.innerHTML = '';
+            currentUser.lichSuDon.forEach(don => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>Dịch vụ: ${don.dichVu}</h6>
+                    <p>Tên TK: ${don.tenTK}</p>
+                    <p>Ghi chú: ${don.ghiChu}</p>
+                    <p>Trạng thái: <span class="${don.status === 'pending' ? 'status-pending' : 'status-done'}">${don.status === 'pending' ? 'Đang chờ' : 'Đã xong'}</span></p>
+                `;
+                lichSuDonList.appendChild(div);
+            });
+            if (currentUser.lichSuDon.length === 0) {
+                lichSuDonList.innerHTML = '<p class="text-muted">Chưa có lịch sử đơn.</p>';
+            }
+        }
+
+        // Load lịch sử mua cho admin
+        function loadLichSuMuaAdmin() {
+            const list = document.getElementById('lichSuMuaAdmin');
+            list.innerHTML = '';
+            lichSuMua.forEach(mua => {
+                const div = document.createElement('div');
+                div.className = 'mb-3 p-3 border rounded';
+                div.innerHTML = `
+                    <h6>Tài khoản: ${mua.name} (Người mua: ${mua.userEmail})</h6>
+                    <p>Mô tả: ${mua.desc}</p>
+                    <p>Giá: ${mua.price} VND</p>
+                    <p>Ngày mua: ${mua.date}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Load khi khởi động
+        updateUserStatus();
+        if (currentUser) showHome();
+        else showLogin();
     </script>
 </body>
 </html>
