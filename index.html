@@ -11,19 +11,21 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8f9fa; color: #212529; }
         .navbar { background: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card { background: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card { background: #ffffff; border: 1px solid #dee2e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.3s ease; }
         .btn-primary { background: #007bff; border: none; }
         .btn-primary:hover { background: #0056b3; transform: translateY(-1px); }
         .btn-success { background: #28a745; }
         .btn-danger { background: #dc3545; }
         .btn-warning { background: #ffc107; color: #212529; }
-        .admin-panel, .user-panel { display: none; } /* Ẩn panel admin và user ban đầu */
-        .product-item { transition: transform 0.3s; }
-        .product-item:hover { transform: scale(1.02); }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
+        .admin-panel, .user-panel { display: none; }
+        .product-item { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .product-item:hover { transform: scale(1.02); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         .status-pending { color: #ffc107; }
         .status-done { color: #28a745; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-section { transition: opacity 0.3s ease; }
+        .filter-section.active { opacity: 1; }
     </style>
 </head>
 <body>
@@ -83,11 +85,29 @@
                 <div class="col-md-6">
                     <div class="card p-4">
                         <form onsubmit="datDonCayThue(event)">
-                            <div class="mb-3">
+                            <div class="mb-3 filter-section">
                                 <label for="dichVu" class="form-label">Chọn dịch vụ</label>
                                 <select class="form-select" id="dichVu" required>
-                                    <option value="">Chọn dịch vụ</option>
+                                    <option value="">Tất cả dịch vụ</option>
                                     <!-- Dịch vụ từ localStorage -->
+                                </select>
+                            </div>
+                            <div class="mb-3 filter-section">
+                                <label for="gameType" class="form-label">Loại game</label>
+                                <select class="form-select" id="gameType">
+                                    <option value="">Tất cả</option>
+                                    <option value="MMORPG">MMORPG</option>
+                                    <option value="FPS">FPS</option>
+                                    <option value="MOBA">MOBA</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 filter-section">
+                                <label for="difficulty" class="form-label">Độ khó</label>
+                                <select class="form-select" id="difficulty">
+                                    <option value="">Tất cả</option>
+                                    <option value="Dễ">Dễ</option>
+                                    <option value="Trung bình">Trung bình</option>
+                                    <option value="Khó">Khó</option>
                                 </select>
                             </div>
                             <div class="mb-3">
@@ -115,7 +135,17 @@
         <div id="taiKhoanPage" class="fade-in" style="display: none;">
             <h1 class="text-center mb-4">Tài khoản</h1>
             <div class="mb-4">
-                <input type="text" class="form-control" id="searchTaiKhoan" placeholder="Tìm kiếm theo tên hoặc mô tả..." oninput="searchTaiKhoan()">
+                <input type="text" class="form-control mb-2" id="searchTaiKhoan" placeholder="Tìm kiếm theo tên hoặc mô tả..." oninput="debouncedFilterTaiKhoan()">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="minPrice" class="form-label">Giá tối thiểu:</label>
+                        <input type="number" class="form-control" id="minPrice" placeholder="0" oninput="debouncedFilterTaiKhoan()">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="maxPrice" class="form-label">Giá tối đa:</label>
+                        <input type="number" class="form-control" id="maxPrice" placeholder="Không giới hạn" oninput="debouncedFilterTaiKhoan()">
+                    </div>
+                </div>
             </div>
             <div id="taiKhoanList" class="row">
                 <!-- Danh sách tài khoản -->
@@ -260,18 +290,35 @@
     <!-- Bootstrap JS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Dữ liệu users, products (tài khoản), donCayThue (đơn cày thuê), dichVu (dịch vụ cày thuê), lichSuMua (lịch sử mua tài khoản)
+        // Dữ liệu users, products (tài khoản), donCayThue (đơn cày thuê), dichVu (dịch vụ cày thuê), lichSuMua (lịch sử mua tài khoản toàn bộ)
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let products = JSON.parse(localStorage.getItem('products')) || []; // Tài khoản
         let donCayThue = JSON.parse(localStorage.getItem('donCayThue')) || []; // Đơn cày thuê
-        let dichVu = JSON.parse(localStorage.getItem('dichVu')) || ['Cày Level', 'Cày Rank', 'Cày Item']; // Dịch vụ mặc định
+        let dichVu = JSON.parse(localStorage.getItem('dichVu')) || [
+            { name: 'Cày Level', gameType: 'MMORPG', difficulty: 'Trung bình' },
+            { name: 'Cày Rank', gameType: 'MOBA', difficulty: 'Khó' },
+            { name: 'Cày Item', gameType: 'FPS', difficulty: 'Dễ' }
+        ]; // Dịch vụ mặc định với metadata
         let lichSuMua = JSON.parse(localStorage.getItem('lichSuMua')) || []; // Lịch sử mua tài khoản toàn bộ
 
         // Hardcode admin
         const ADMIN_EMAIL = 'admin@shop.com';
         const ADMIN_PASSWORD = 'admin123';
         const GIA_DICH_VU = 10000; // Giá dịch vụ cày thuê
+
+        // Debounce function for smoother filtering
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
 
         // Cập nhật trạng thái user và wallet
         function updateUserStatus() {
@@ -423,12 +470,10 @@
             const info = document.getElementById('taiKhoanInfo');
             const product = products[productIndex];
             info.innerHTML = `Tên TK: ${product.name}<br>Mật khẩu: ${product.pass}<br>Mô tả: ${product.desc}`;
-            // Lưu lịch sử mua cho user và admin
             const buyDate = new Date().toLocaleDateString('vi-VN');
             currentUser.lichSuMua.push({ name: product.name, desc: product.desc, price: product.price, date: buyDate });
             lichSuMua.push({ name: product.name, desc: product.desc, price: product.price, userEmail: currentUser.email, date: buyDate });
             localStorage.setItem('lichSuMua', JSON.stringify(lichSuMua));
-            // Xóa sản phẩm sau khi mua
             products.splice(productIndex, 1);
             localStorage.setItem('products', JSON.stringify(products));
             updateWallet();
@@ -459,12 +504,17 @@
             }
         }
 
-        // Tìm kiếm tài khoản
-        function searchTaiKhoan() {
+        // Debounced filter for accounts
+        const debouncedFilterTaiKhoan = debounce(() => {
             const search = document.getElementById('searchTaiKhoan').value.toLowerCase();
+            const minPrice = parseInt(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseInt(document.getElementById('maxPrice').value) || Infinity;
             const list = document.getElementById('taiKhoanList');
             list.innerHTML = '';
-            const filtered = products.filter(product => product.name.toLowerCase().includes(search) || product.desc.toLowerCase().includes(search));
+            const filtered = products.filter(product => 
+                (product.name.toLowerCase().includes(search) || product.desc.toLowerCase().includes(search)) &&
+                product.price >= minPrice && product.price <= maxPrice
+            );
             filtered.forEach((product, index) => {
                 const col = document.createElement('div');
                 col.className = 'col-md-4 mb-4 product-item';
@@ -475,7 +525,7 @@
                             <p class="card-text">Ngày đăng: ${product.date}</p>
                             <p class="card-text">${product.desc}</p>
                             <p class="card-text"><strong>Giá: ${product.price} VND</strong></p>
-                            <button class="btn btn-primary w-100" onclick="buyTaiKhoan(${index})">Mua</button>
+                            <button class="btn btn-primary w-100" onclick="buyTaiKhoan(${products.indexOf(product)})">Mua</button>
                         </div>
                     </div>
                 `;
@@ -484,7 +534,7 @@
             if (filtered.length === 0) {
                 list.innerHTML = '<p class="text-center text-muted">Không tìm thấy tài khoản.</p>';
             }
-        }
+        }, 300);
 
         // Mua tài khoản (kiểm tra tiền)
         function buyTaiKhoan(index) {
@@ -515,31 +565,39 @@
             localStorage.setItem('products', JSON.stringify(products));
             alert('Thêm tài khoản thành công!');
             e.target.reset();
-            loadTaiKhoan(); // Cập nhật nếu cần
+            loadTaiKhoan();
         }
 
         // Thêm dịch vụ (admin)
         function addDichVu(e) {
             e.preventDefault();
             const name = document.getElementById('dvName').value;
-            dichVu.push(name);
+            dichVu.push({ name, gameType: 'MMORPG', difficulty: 'Trung bình' });
             localStorage.setItem('dichVu', JSON.stringify(dichVu));
             alert('Thêm dịch vụ thành công!');
             e.target.reset();
             loadDichVuAdmin();
         }
 
-        // Load dịch vụ cho user
+        // Load dịch vụ cho user with filtering
         function loadDichVuUser() {
             const select = document.getElementById('dichVu');
-            select.innerHTML = '<option value="">Chọn dịch vụ</option>';
+            const gameType = document.getElementById('gameType').value;
+            const difficulty = document.getElementById('difficulty').value;
+            select.innerHTML = '<option value="">Tất cả dịch vụ</option>';
             dichVu.forEach(dv => {
-                const option = document.createElement('option');
-                option.value = dv;
-                option.textContent = dv;
-                select.appendChild(option);
+                if ((gameType === '' || dv.gameType === gameType) && (difficulty === '' || dv.difficulty === difficulty)) {
+                    const option = document.createElement('option');
+                    option.value = dv.name;
+                    option.textContent = `${dv.name} (${dv.gameType}, ${dv.difficulty})`;
+                    select.appendChild(option);
+                }
             });
         }
+
+        // Event listeners for smooth filtering
+        document.getElementById('gameType').addEventListener('change', loadDichVuUser);
+        document.getElementById('difficulty').addEventListener('change', loadDichVuUser);
 
         // Load dịch vụ cho admin
         function loadDichVuAdmin() {
@@ -549,7 +607,7 @@
                 const div = document.createElement('div');
                 div.className = 'mb-3 p-3 border rounded';
                 div.innerHTML = `
-                    <h6>${dv}</h6>
+                    <h6>${dv.name} (${dv.gameType}, ${dv.difficulty})</h6>
                     <button class="btn btn-danger btn-sm" onclick="deleteDichVu(${index})">Xóa</button>
                 `;
                 list.appendChild(div);
@@ -580,7 +638,7 @@
             const tenTK = document.getElementById('tenTK').value;
             const matKhau = document.getElementById('matKhau').value;
             const ghiChu = document.getElementById('ghiChu').value;
-            const status = 'pending'; // Trạng thái ban đầu
+            const status = 'pending';
             const userEmail = currentUser.email;
             donCayThue.push({ dichVu, tenTK, matKhau, ghiChu, status, userEmail });
             currentUser.wallet -= GIA_DICH_VU;
@@ -616,7 +674,6 @@
             donCayThue[index].status = status;
             localStorage.setItem('donCayThue', JSON.stringify(donCayThue));
             loadDonCayThueAdmin();
-            // Cập nhật lịch sử user
             const userIndex = users.findIndex(u => u.email === donCayThue[index].userEmail);
             if (userIndex !== -1) {
                 const donUserIndex = users[userIndex].lichSuDon.findIndex(d => d.tenTK === donCayThue[index].tenTK);
